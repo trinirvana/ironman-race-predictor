@@ -1,0 +1,4601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ironman Race Predictor & Analyzer 2025-2026</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-color: #E4002B;
+            --secondary-color: #0A1F3D;
+            --accent-color: #FDB913;
+            --grade-a: #22C55E;
+            --grade-b: #84CC16;
+            --grade-c: #FCD34D;
+            --grade-d: #FB923C;
+            --grade-f: #EF4444;
+            --bg-primary: #FFFFFF;
+            --bg-secondary: #F3F4F6;
+            --text-primary: #111827;
+            --text-secondary: #6B7280;
+            --border-radius: 8px;
+            --spacing-unit: 8px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            font-size: 16px;
+            line-height: 1.5;
+            color: var(--text-primary);
+            background-color: var(--bg-primary);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: calc(var(--spacing-unit) * 2);
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: calc(var(--spacing-unit) * 4) 0;
+            text-align: center;
+            margin-bottom: calc(var(--spacing-unit) * 4);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: calc(var(--spacing-unit) * 2);
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .section {
+            background: var(--bg-primary);
+            border-radius: var(--border-radius);
+            padding: calc(var(--spacing-unit) * 3);
+            margin-bottom: calc(var(--spacing-unit) * 3);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .section h2 {
+            color: var(--secondary-color);
+            margin-bottom: calc(var(--spacing-unit) * 3);
+            font-size: 1.5rem;
+            border-bottom: 3px solid var(--primary-color);
+            padding-bottom: calc(var(--spacing-unit));
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: calc(var(--spacing-unit) * 3);
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            margin-bottom: calc(var(--spacing-unit));
+            color: var(--text-primary);
+        }
+
+        .form-group input, .form-group select {
+            padding: calc(var(--spacing-unit) * 1.5);
+            border: 2px solid #E5E7EB;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: calc(var(--spacing-unit) * 2) calc(var(--spacing-unit) * 3);
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-block;
+            text-decoration: none;
+            text-align: center;
+        }
+
+        .btn:hover {
+            background: #C40024;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: var(--secondary-color);
+        }
+
+        .btn-secondary:hover {
+            background: #082849;
+        }
+
+        .filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: calc(var(--spacing-unit) * 2);
+            margin-bottom: calc(var(--spacing-unit) * 3);
+            align-items: center;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            min-width: 150px;
+        }
+
+        .filter-group label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: calc(var(--spacing-unit) / 2);
+        }
+
+        .race-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .race-table th {
+            background: var(--secondary-color);
+            color: white;
+            padding: calc(var(--spacing-unit) * 2);
+            text-align: left;
+            font-weight: 600;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .race-table th:hover {
+            background: #0A2652;
+        }
+
+        .race-table td {
+            padding: calc(var(--spacing-unit) * 2);
+            border-bottom: 1px solid #E5E7EB;
+        }
+
+        .race-table tr:hover {
+            background: #F9FAFB;
+        }
+
+        .grade-badge {
+            display: inline-block;
+            padding: calc(var(--spacing-unit) / 2) calc(var(--spacing-unit));
+            border-radius: calc(var(--border-radius) / 2);
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: white;
+        }
+
+        .grade-a { background: var(--grade-a); }
+        .grade-b { background: var(--grade-b); }
+        .grade-c { background: var(--grade-c); color: var(--text-primary); }
+        .grade-d { background: var(--grade-d); }
+        .grade-f { background: var(--grade-f); }
+
+        .course-icons {
+            display: flex;
+            gap: calc(var(--spacing-unit) / 2);
+        }
+
+        .course-icon {
+            display: inline-block;
+            padding: calc(var(--spacing-unit) / 2);
+            border-radius: 50%;
+            font-size: 0.8rem;
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+        }
+
+        .cost-budget { color: #22C55E; font-weight: 600; }
+        .cost-moderate { color: #F59E0B; font-weight: 600; }
+        .cost-expensive { color: #EF4444; font-weight: 600; }
+        .cost-premium { color: #7C2D12; font-weight: 600; }
+
+        .value-score {
+            display: inline-block;
+            padding: calc(var(--spacing-unit) / 2) calc(var(--spacing-unit));
+            border-radius: calc(var(--border-radius) / 2);
+            font-size: 0.8rem;
+            font-weight: 600;
+            background: #F0F9FF;
+            color: #0369A1;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin: calc(var(--spacing-unit) * 3) 0;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: calc(var(--spacing-unit) * 3);
+            border-radius: var(--border-radius);
+            width: 90%;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: black;
+        }
+
+        .prediction-summary {
+            background: linear-gradient(135deg, var(--grade-a), var(--grade-b));
+            color: white;
+            padding: calc(var(--spacing-unit) * 3);
+            border-radius: var(--border-radius);
+            margin: calc(var(--spacing-unit) * 3) 0;
+        }
+
+        .prediction-summary h3 {
+            margin-bottom: calc(var(--spacing-unit) * 2);
+            font-size: 1.3rem;
+        }
+
+        .prediction-summary .time {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: calc(var(--spacing-unit));
+        }
+
+        .splits-table {
+            background: white;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            margin: calc(var(--spacing-unit) * 2) 0;
+        }
+
+        .splits-table th,
+        .splits-table td {
+            padding: calc(var(--spacing-unit) * 1.5);
+            text-align: left;
+            border-bottom: 1px solid #E5E7EB;
+        }
+
+        .splits-table th {
+            background: var(--bg-secondary);
+            font-weight: 600;
+        }
+
+        .methodology {
+            background: var(--bg-secondary);
+            padding: calc(var(--spacing-unit) * 3);
+            border-radius: var(--border-radius);
+            margin: calc(var(--spacing-unit) * 4) 0;
+        }
+
+        .methodology h3 {
+            color: var(--secondary-color);
+            margin-bottom: calc(var(--spacing-unit) * 2);
+        }
+
+        .methodology ol,
+        .methodology ul {
+            margin-left: calc(var(--spacing-unit) * 3);
+            margin-bottom: calc(var(--spacing-unit) * 2);
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: calc(var(--spacing-unit) * 4);
+        }
+
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto calc(var(--spacing-unit) * 2);
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: var(--spacing-unit);
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .filters {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .race-table {
+                font-size: 0.9rem;
+            }
+            
+            .race-table th,
+            .race-table td {
+                padding: var(--spacing-unit);
+            }
+        }
+
+        .chart-container {
+            position: relative;
+            height: 400px;
+            width: 100%;
+            margin: 2rem 0;
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 1rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        @media print {
+            .btn, .filters, .chart-container {
+                display: none;
+            }
+            
+            .race-table {
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <h1>🏊‍♂️🚴‍♂️🏃‍♂️ Ironman Race Predictor & Analyzer</h1>
+            <p>Find your perfect Ironman race with AI-powered predictions and comprehensive analysis</p>
+            <p>Complete race data for November 2025 - December 2026</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- User Input Section -->
+        <section class="section">
+            <h2>Your Performance Profile</h2>
+            <form id="userForm" class="form-grid">
+                <div class="form-group">
+                    <label for="swimPace">Swim Pace (min:sec per 100m)</label>
+                    <input type="text" id="swimPace" placeholder="2:05" required>
+                    <small style="color: var(--text-secondary); font-size: 0.9rem;">Your comfortable 100m pace for 3.8km distance</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="bikeSpeed">Average Bike Speed (km/h)</label>
+                    <input type="number" id="bikeSpeed" placeholder="35" min="20" max="50" required>
+                    <small style="color: var(--text-secondary); font-size: 0.9rem;">Your realistic Ironman average (adjust for course difficulty)</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="runPace">Run Pace (min:sec per km)</label>
+                    <input type="text" id="runPace" placeholder="5:30" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="age">Age</label>
+                    <input type="number" id="age" min="18" max="85" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="gender">Gender</label>
+                    <select id="gender" required>
+                        <option value="">Select Gender</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="weight">Weight (kg)</label>
+                    <input type="number" id="weight" min="40" max="150" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="experience">Ironman Experience</label>
+                    <select id="experience" required>
+                        <option value="">Select Experience</option>
+                        <option value="first">First Ironman</option>
+                        <option value="1-3">1-3 Previous Races</option>
+                        <option value="4-10">4-10 Previous Races</option>
+                        <option value="10+">10+ Previous Races</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="heatTolerance">Heat Tolerance</label>
+                    <select id="heatTolerance">
+                        <option value="low">Low (prefer cool weather)</option>
+                        <option value="moderate">Moderate</option>
+                        <option value="high">High (acclimatized to heat)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="countryOfOrigin">Country of Origin</label>
+                    <select id="countryOfOrigin" required>
+                        <option value="thailand" selected>Thailand</option>
+                        <option value="usa">United States</option>
+                        <option value="canada">Canada</option>
+                        <option value="uk">United Kingdom</option>
+                        <option value="germany">Germany</option>
+                        <option value="france">France</option>
+                        <option value="spain">Spain</option>
+                        <option value="italy">Italy</option>
+                        <option value="netherlands">Netherlands</option>
+                        <option value="belgium">Belgium</option>
+                        <option value="sweden">Sweden</option>
+                        <option value="norway">Norway</option>
+                        <option value="denmark">Denmark</option>
+                        <option value="switzerland">Switzerland</option>
+                        <option value="austria">Austria</option>
+                        <option value="portugal">Portugal</option>
+                        <option value="ireland">Ireland</option>
+                        <option value="australia">Australia</option>
+                        <option value="newzealand">New Zealand</option>
+                        <option value="japan">Japan</option>
+                        <option value="southkorea">South Korea</option>
+                        <option value="china">China</option>
+                        <option value="taiwan">Taiwan</option>
+                        <option value="singapore">Singapore</option>
+                        <option value="malaysia">Malaysia</option>
+                        <option value="indonesia">Indonesia</option>
+                        <option value="philippines">Philippines</option>
+                        <option value="vietnam">Vietnam</option>
+                        <option value="india">India</option>
+                        <option value="southafrica">South Africa</option>
+                        <option value="brazil">Brazil</option>
+                        <option value="argentina">Argentina</option>
+                        <option value="mexico">Mexico</option>
+                        <option value="chile">Chile</option>
+                        <option value="colombia">Colombia</option>
+                        <option value="uae">United Arab Emirates</option>
+                        <option value="israel">Israel</option>
+                        <option value="russia">Russia</option>
+                        <option value="finland">Finland</option>
+                        <option value="poland">Poland</option>
+                        <option value="czechrepublic">Czech Republic</option>
+                        <option value="hungary">Hungary</option>
+                        <option value="croatia">Croatia</option>
+                        <option value="slovenia">Slovenia</option>
+                        <option value="greece">Greece</option>
+                        <option value="turkey">Turkey</option>
+                        <option value="egypt">Egypt</option>
+                        <option value="kenya">Kenya</option>
+                        <option value="ethiopia">Ethiopia</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="trainingVolume">Training Volume (hours/week)</label>
+                    <input type="number" id="trainingVolume" min="5" max="35" placeholder="15">
+                </div>
+            </form>
+            
+            <div style="margin-top: 2rem; text-align: center;">
+                <button type="button" class="btn" onclick="calculatePredictions()">
+                    Analyze All Races & Generate Predictions
+                </button>
+            </div>
+        </section>
+
+        <!-- Loading State -->
+        <div id="loading" class="loading">
+            <div class="loading-spinner"></div>
+            <p>Analyzing races and calculating predictions...</p>
+        </div>
+
+        <!-- Results Summary -->
+        <div id="results" style="display: none;">
+            <section class="section">
+                <h2>Your Race Predictions Summary</h2>
+                <div id="predictionSummary"></div>
+            </section>
+
+            <!-- Filters -->
+            <section class="section">
+                <h2>Filter & Compare Races</h2>
+                <div class="filters">
+                    <div class="filter-group">
+                        <label>Sort By:</label>
+                        <select id="sortBy" onchange="sortRaces()">
+                            <option value="suitability">Best Match</option>
+                            <option value="predictedTime">Fastest Time</option>
+                            <option value="date">Date</option>
+                            <option value="name">Name</option>
+                            <option value="difficulty">Easiest First</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label>Location:</label>
+                        <select id="locationFilter" onchange="filterRaces()">
+                            <option value="all">All Locations</option>
+                            <option value="usa">United States</option>
+                            <option value="europe">Europe</option>
+                            <option value="asia">Asia-Pacific</option>
+                            <option value="americas">Americas</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label>Time Period:</label>
+                        <select id="dateFilter" onchange="filterRaces()">
+                            <option value="all">All Dates</option>
+                            <option value="2025-q4">Q4 2025</option>
+                            <option value="2026-q1">Q1 2026</option>
+                            <option value="2026-q2">Q2 2026</option>
+                            <option value="2026-q3">Q3 2026</option>
+                            <option value="2026-q4">Q4 2026</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label>Suitability:</label>
+                        <select id="gradeFilter" onchange="filterRaces()">
+                            <option value="all">All Grades</option>
+                            <option value="a">A Grade Only</option>
+                            <option value="ab">A & B Grades</option>
+                            <option value="abc">C Grade or Better</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label>Course Type:</label>
+                        <select id="courseFilter" onchange="filterRaces()">
+                            <option value="all">All Courses</option>
+                            <option value="flat">Flat (< 1000m gain)</option>
+                            <option value="rolling">Rolling (1000-1800m)</option>
+                            <option value="hilly">Hilly (> 1800m gain)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label>Budget:</label>
+                        <select id="budgetFilter" onchange="filterRaces()">
+                            <option value="all">All Budgets</option>
+                            <option value="budget">$ Budget (< $2,000)</option>
+                            <option value="moderate">$$ Moderate ($2,000-4,000)</option>
+                            <option value="expensive">$$$ Expensive ($4,000-6,000)</option>
+                            <option value="premium">$$$$ Premium (> $6,000)</option>
+                        </select>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Race Comparison Table -->
+            <section class="section">
+                <h2>Race Analysis & Comparison</h2>
+                <div style="overflow-x: auto;">
+                    <table class="race-table" id="raceTable">
+                        <thead>
+                            <tr>
+                                <th onclick="sortTable('name')">Race Name ↕️</th>
+                                <th onclick="sortTable('date')">Date ↕️</th>
+                                <th onclick="sortTable('location')">Location ↕️</th>
+                                <th onclick="sortTable('predictedTime')">Predicted Time ↕️</th>
+                                <th onclick="sortTable('suitability')">Suitability ↕️</th>
+                                <th onclick="sortTable('cost')">Est. Cost ↕️</th>
+                                <th onclick="sortTable('course')">Course Profile</th>
+                                <th onclick="sortTable('environment')">Environment</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="raceTableBody">
+                            <!-- Populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Data Visualization -->
+            <section class="section">
+                <h2>Race Performance Visualization</h2>
+                <div class="chart-container">
+                    <canvas id="performanceChart"></canvas>
+                </div>
+                <div style="text-align: center; margin: 2rem 0;">
+                    <button class="btn btn-secondary" onclick="showTimelineChart()">Timeline View</button>
+                    <button class="btn btn-secondary" onclick="showScatterChart()">Difficulty Analysis</button>
+                    <button class="btn btn-secondary" onclick="showRadarChart()">Course Comparison</button>
+                </div>
+            </section>
+        </div>
+
+        <!-- Methodology Section -->
+        <section class="methodology">
+            <h2>How Predictions Work</h2>
+            
+            <h3>Data Sources</h3>
+            <p>Race data collected from official Ironman race calendar and individual race pages. 
+            Environmental data based on historical weather patterns for race locations. Elevation 
+            profiles sourced from official course maps and athlete reports.</p>
+            
+            <h3>Prediction Algorithm</h3>
+            <p>Your predicted finish time is calculated by:</p>
+            <ol>
+                <li>Establishing base times from your input metrics</li>
+                <li>Adjusting for course elevation (bike and run)</li>
+                <li>Adjusting for environmental factors (temperature, humidity, altitude, wind)</li>
+                <li>Adjusting for technical difficulty and terrain</li>
+                <li>Comparing against historical race averages when available</li>
+            </ol>
+            
+            <h3>Suitability Rating</h3>
+            <p>Each race receives a suitability score (0-100) based on how well it matches your strengths:</p>
+            <ul>
+                <li><strong>Swim Match (15%):</strong> Compares your swim ability to race swim conditions</li>
+                <li><strong>Bike Match (45%):</strong> Evaluates your power/climbing vs course elevation</li>
+                <li><strong>Run Match (30%):</strong> Assesses your run pace vs course difficulty and heat</li>
+                <li><strong>Environment Match (10%):</strong> Considers your preferences and tolerances</li>
+            </ul>
+            
+            <h3>Accuracy Disclaimer</h3>
+            <p><em>Predictions are estimates based on available data and typical conditions. Actual race 
+            performance depends on many factors including: training progression, race day conditions, 
+            nutrition execution, pacing discipline, mechanical issues, and unforeseen circumstances. 
+            Use predictions as a general guide, not a guarantee.</em></p>
+        </section>
+    </div>
+
+    <!-- Race Detail Modal -->
+    <div id="raceModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <div id="raceDetails">
+                <!-- Populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Embedded Race Data -->
+    <script>
+        const raceData = {
+            races: [
+                {
+                    id: "im-florida-2025",
+                    name: "IRONMAN Florida",
+                    location: {
+                        city: "Panama City Beach",
+                        state: "Florida",
+                        country: "United States",
+                        coordinates: {"lat": 30.1766, "lng": -85.8055}
+                    },
+                    date: "2025-11-01",
+                    registrationOpen: true,
+                    raceWebsite: "https://www.ironman.com/races/im-florida",
+                    course: {
+                        swim: {
+                            distance: 3800,
+                            type: "ocean",
+                            waves: "moderate",
+                            current: "mild",
+                            wetsuitLegal: true,
+                            avgWaterTemp: 24,
+                            loopCount: 1
+                        },
+                        bike: {
+                            distance: 180,
+                            elevationGain: 350,
+                            elevationLoss: 350,
+                            terrain: "flat",
+                            loops: 2,
+                            technicalDifficulty: "easy",
+                            roadSurface: "excellent"
+                        },
+                        run: {
+                            distance: 42.2,
+                            elevationGain: 85,
+                            terrain: "flat",
+                            loops: 3,
+                            surface: "pavement"
+                        }
+                    },
+                    environment: {
+                        typicalWeather: {
+                            tempHigh: 26,
+                            tempLow: 18,
+                            humidity: 75,
+                            rainfall: "occasional",
+                            wind: {
+                                avgSpeed: 15,
+                                direction: "variable",
+                                gusty: false
+                            }
+                        },
+                        altitude: 5,
+                        airQuality: "excellent",
+                        sunExposure: "moderate"
+                    },
+                    historicalData: {
+                        avgFinishTime: "12:45:30",
+                        medianFinishTime: "12:30:15",
+                        finishRate: 85,
+                        dnfRate: 15
+                    },
+                    logistics: {
+                        cutoffTimes: {
+                            swim: "02:20:00",
+                            bike: "10:30:00",
+                            total: "17:00:00"
+                        },
+                        challengeRating: "beginner"
+                    },
+                    costs: {
+                        registrationUSD: 695,
+                        accommodationMultiplier: 1.2,
+                        avgDailyExpenseUSD: 80
+                    }
+                },
+                {
+                    id: "im-arizona-2025",
+                    name: "IRONMAN Arizona",
+                    location: {
+                        city: "Tempe",
+                        state: "Arizona",
+                        country: "United States",
+                        coordinates: {"lat": 33.4484, "lng": -111.9260}
+                    },
+                    date: "2025-11-16",
+                    registrationOpen: true,
+                    raceWebsite: "https://www.ironman.com/races/im-arizona",
+                    course: {
+                        swim: {
+                            distance: 3800,
+                            type: "lake",
+                            waves: "calm",
+                            current: "none",
+                            wetsuitLegal: true,
+                            avgWaterTemp: 20,
+                            loopCount: 1
+                        },
+                        bike: {
+                            distance: 180,
+                            elevationGain: 580,
+                            elevationLoss: 580,
+                            terrain: "rolling",
+                            loops: 3,
+                            technicalDifficulty: "moderate",
+                            roadSurface: "excellent"
+                        },
+                        run: {
+                            distance: 42.2,
+                            elevationGain: 150,
+                            terrain: "flat",
+                            loops: 3,
+                            surface: "pavement"
+                        }
+                    },
+                    environment: {
+                        typicalWeather: {
+                            tempHigh: 24,
+                            tempLow: 12,
+                            humidity: 45,
+                            rainfall: "rare",
+                            wind: {
+                                avgSpeed: 8,
+                                direction: "variable",
+                                gusty: false
+                            }
+                        },
+                        altitude: 350,
+                        airQuality: "good",
+                        sunExposure: "high"
+                    },
+                    historicalData: {
+                        avgFinishTime: "12:15:45",
+                        medianFinishTime: "12:05:30",
+                        finishRate: 88,
+                        dnfRate: 12
+                    },
+                    logistics: {
+                        cutoffTimes: {
+                            swim: "02:20:00",
+                            bike: "10:30:00",
+                            total: "17:00:00"
+                        },
+                        challengeRating: "intermediate"
+                    },
+                    costs: {
+                        registrationUSD: 695,
+                        accommodationMultiplier: 0.8,
+                        avgDailyExpenseUSD: 65
+                    }
+                },
+                {
+                    id: "im-malaysia-2025",
+                    name: "IRONMAN Malaysia",
+                    location: {
+                        city: "Langkawi",
+                        state: "Kedah",
+                        country: "Malaysia",
+                        coordinates: {"lat": 6.3500, "lng": 99.8000}
+                    },
+                    date: "2025-11-23",
+                    registrationOpen: true,
+                    raceWebsite: "https://www.ironman.com/races/im-malaysia",
+                    course: {
+                        swim: {
+                            distance: 3800,
+                            type: "ocean",
+                            waves: "moderate",
+                            current: "mild",
+                            wetsuitLegal: false,
+                            avgWaterTemp: 28,
+                            loopCount: 1
+                        },
+                        bike: {
+                            distance: 180,
+                            elevationGain: 1200,
+                            elevationLoss: 1200,
+                            terrain: "hilly",
+                            loops: 2,
+                            technicalDifficulty: "moderate",
+                            roadSurface: "good"
+                        },
+                        run: {
+                            distance: 42.2,
+                            elevationGain: 180,
+                            terrain: "rolling",
+                            loops: 2,
+                            surface: "pavement"
+                        }
+                    },
+                    environment: {
+                        typicalWeather: {
+                            tempHigh: 32,
+                            tempLow: 26,
+                            humidity: 85,
+                            rainfall: "common",
+                            wind: {
+                                avgSpeed: 12,
+                                direction: "variable",
+                                gusty: true
+                            }
+                        },
+                        altitude: 15,
+                        airQuality: "good",
+                        sunExposure: "high"
+                    },
+                    historicalData: {
+                        avgFinishTime: "13:25:15",
+                        medianFinishTime: "13:15:45",
+                        finishRate: 78,
+                        dnfRate: 22
+                    },
+                    logistics: {
+                        cutoffTimes: {
+                            swim: "02:20:00",
+                            bike: "10:30:00",
+                            total: "17:00:00"
+                        },
+                        challengeRating: "advanced"
+                    },
+                    costs: {
+                        registrationUSD: 750,
+                        accommodationMultiplier: 0.6,
+                        avgDailyExpenseUSD: 45
+                    }
+                },
+                {
+                    id: "im-cozumel-2025",
+                    name: "IRONMAN Cozumel",
+                    location: {
+                        city: "Cozumel",
+                        state: "Quintana Roo",
+                        country: "Mexico",
+                        coordinates: {"lat": 20.4230, "lng": -86.9223}
+                    },
+                    date: "2025-11-30",
+                    registrationOpen: true,
+                    raceWebsite: "https://www.ironman.com/races/im-cozumel",
+                    course: {
+                        swim: {
+                            distance: 3800,
+                            type: "ocean",
+                            waves: "calm",
+                            current: "strong",
+                            wetsuitLegal: false,
+                            avgWaterTemp: 27,
+                            loopCount: 1
+                        },
+                        bike: {
+                            distance: 180,
+                            elevationGain: 450,
+                            elevationLoss: 450,
+                            terrain: "flat",
+                            loops: 3,
+                            technicalDifficulty: "easy",
+                            roadSurface: "good"
+                        },
+                        run: {
+                            distance: 42.2,
+                            elevationGain: 95,
+                            terrain: "flat",
+                            loops: 4,
+                            surface: "pavement"
+                        }
+                    },
+                    environment: {
+                        typicalWeather: {
+                            tempHigh: 29,
+                            tempLow: 24,
+                            humidity: 80,
+                            rainfall: "occasional",
+                            wind: {
+                                avgSpeed: 20,
+                                direction: "crosswind on bike",
+                                gusty: true
+                            }
+                        },
+                        altitude: 5,
+                        airQuality: "excellent",
+                        sunExposure: "high"
+                    },
+                    historicalData: {
+                        avgFinishTime: "12:55:30",
+                        medianFinishTime: "12:40:15",
+                        finishRate: 82,
+                        dnfRate: 18
+                    },
+                    logistics: {
+                        cutoffTimes: {
+                            swim: "02:20:00",
+                            bike: "10:30:00",
+                            total: "17:00:00"
+                        },
+                        challengeRating: "intermediate"
+                    },
+                    costs: {
+                        registrationUSD: 725,
+                        accommodationMultiplier: 0.7,
+                        avgDailyExpenseUSD: 55
+                    }
+                },
+                {
+                    id: "im-western-australia-2025",
+                    name: "IRONMAN Western Australia",
+                    location: {
+                        city: "Busselton",
+                        state: "Western Australia",
+                        country: "Australia",
+                        coordinates: {"lat": -33.6500, "lng": 115.3400}
+                    },
+                    date: "2025-12-07",
+                    registrationOpen: true,
+                    raceWebsite: "https://www.ironman.com/races/im-western-australia",
+                    course: {
+                        swim: {
+                            distance: 3800,
+                            type: "ocean",
+                            waves: "moderate",
+                            current: "mild",
+                            wetsuitLegal: true,
+                            avgWaterTemp: 21,
+                            loopCount: 1
+                        },
+                        bike: {
+                            distance: 180,
+                            elevationGain: 750,
+                            elevationLoss: 750,
+                            terrain: "rolling",
+                            loops: 2,
+                            technicalDifficulty: "moderate",
+                            roadSurface: "excellent"
+                        },
+                        run: {
+                            distance: 42.2,
+                            elevationGain: 120,
+                            terrain: "flat",
+                            loops: 4,
+                            surface: "pavement"
+                        }
+                    },
+                    environment: {
+                        typicalWeather: {
+                            tempHigh: 26,
+                            tempLow: 18,
+                            humidity: 65,
+                            rainfall: "occasional",
+                            wind: {
+                                avgSpeed: 18,
+                                direction: "headwind on return",
+                                gusty: true
+                            }
+                        },
+                        altitude: 10,
+                        airQuality: "excellent",
+                        sunExposure: "high"
+                    },
+                    historicalData: {
+                        avgFinishTime: "12:35:20",
+                        medianFinishTime: "12:25:45",
+                        finishRate: 86,
+                        dnfRate: 14
+                    },
+                    logistics: {
+                        cutoffTimes: {
+                            swim: "02:20:00",
+                            bike: "10:30:00",
+                            total: "17:00:00"
+                        },
+                        challengeRating: "intermediate"
+                    },
+                    costs: {
+                        registrationUSD: 695,
+                        accommodationMultiplier: 1.1,
+                        avgDailyExpenseUSD: 75
+                    }
+                },
+                {
+                    id: "im-new-zealand-2026",
+                    name: "IRONMAN New Zealand",
+                    location: {
+                        city: "Taupo",
+                        state: "North Island",
+                        country: "New Zealand",
+                        coordinates: {"lat": -38.7500, "lng": 175.9167}
+                    },
+                    date: "2026-03-07",
+                    registrationOpen: true,
+                    raceWebsite: "https://www.ironman.com/races/im-new-zealand",
+                    course: {
+                        swim: {
+                            distance: 3800,
+                            type: "lake",
+                            waves: "calm",
+                            current: "none",
+                            wetsuitLegal: true,
+                            avgWaterTemp: 18,
+                            loopCount: 1
+                        },
+                        bike: {
+                            distance: 180,
+                            elevationGain: 1450,
+                            elevationLoss: 1450,
+                            terrain: "hilly",
+                            loops: 1,
+                            technicalDifficulty: "hard",
+                            roadSurface: "excellent"
+                        },
+                        run: {
+                            distance: 42.2,
+                            elevationGain: 280,
+                            terrain: "rolling",
+                            loops: 2,
+                            surface: "pavement"
+                        }
+                    },
+                    environment: {
+                        typicalWeather: {
+                            tempHigh: 22,
+                            tempLow: 12,
+                            humidity: 70,
+                            rainfall: "occasional",
+                            wind: {
+                                avgSpeed: 15,
+                                direction: "variable",
+                                gusty: true
+                            }
+                        },
+                        altitude: 380,
+                        airQuality: "excellent",
+                        sunExposure: "moderate"
+                    },
+                    historicalData: {
+                        avgFinishTime: "13:15:45",
+                        medianFinishTime: "13:05:30",
+                        finishRate: 80,
+                        dnfRate: 20
+                    },
+                    logistics: {
+                        cutoffTimes: {
+                            swim: "02:20:00",
+                            bike: "10:30:00",
+                            total: "17:00:00"
+                        },
+                        challengeRating: "advanced"
+                    },
+                    costs: {
+                        registrationUSD: 750,
+                        accommodationMultiplier: 0.9,
+                        avgDailyExpenseUSD: 70
+                    }
+                },
+                {
+                    id: "im-texas-2026",
+                    name: "IRONMAN Texas",
+                    location: {
+                        city: "The Woodlands",
+                        state: "Texas",
+                        country: "United States",
+                        coordinates: {"lat": 30.1588, "lng": -95.4895}
+                    },
+                    date: "2026-04-18",
+                    registrationOpen: true,
+                    raceWebsite: "https://www.ironman.com/races/im-texas",
+                    course: {
+                        swim: {
+                            distance: 3800,
+                            type: "lake",
+                            waves: "calm",
+                            current: "none",
+                            wetsuitLegal: true,
+                            avgWaterTemp: 22,
+                            loopCount: 1
+                        },
+                        bike: {
+                            distance: 180,
+                            elevationGain: 420,
+                            elevationLoss: 420,
+                            terrain: "flat",
+                            loops: 2,
+                            technicalDifficulty: "easy",
+                            roadSurface: "excellent"
+                        },
+                        run: {
+                            distance: 42.2,
+                            elevationGain: 95,
+                            terrain: "flat",
+                            loops: 3,
+                            surface: "pavement"
+                        }
+                    },
+                    environment: {
+                        typicalWeather: {
+                            tempHigh: 28,
+                            tempLow: 18,
+                            humidity: 70,
+                            rainfall: "occasional",
+                            wind: {
+                                avgSpeed: 12,
+                                direction: "variable",
+                                gusty: false
+                            }
+                        },
+                        altitude: 45,
+                        airQuality: "good",
+                        sunExposure: "high"
+                    },
+                    historicalData: {
+                        avgFinishTime: "12:25:15",
+                        medianFinishTime: "12:15:45",
+                        finishRate: 87,
+                        dnfRate: 13
+                    },
+                    logistics: {
+                        cutoffTimes: {
+                            swim: "02:20:00",
+                            bike: "10:30:00",
+                            total: "17:00:00"
+                        },
+                        challengeRating: "beginner"
+                    }
+                },
+                {
+                    id: "im-chattanooga-2026",
+                    name: "IRONMAN Chattanooga",
+                    location: {
+                        city: "Chattanooga",
+                        state: "Tennessee",
+                        country: "United States",
+                        coordinates: {"lat": 35.0456, "lng": -85.3097}
+                    },
+                    date: "2026-05-16",
+                    registrationOpen: true,
+                    raceWebsite: "https://www.ironman.com/races/im-chattanooga",
+                    course: {
+                        swim: {
+                            distance: 3800,
+                            type: "river",
+                            waves: "calm",
+                            current: "strong",
+                            wetsuitLegal: true,
+                            avgWaterTemp: 20,
+                            loopCount: 1
+                        },
+                        bike: {
+                            distance: 180,
+                            elevationGain: 2200,
+                            elevationLoss: 2200,
+                            terrain: "mountainous",
+                            loops: 1,
+                            technicalDifficulty: "hard",
+                            roadSurface: "good"
+                        },
+                        run: {
+                            distance: 42.2,
+                            elevationGain: 450,
+                            terrain: "hilly",
+                            loops: 2,
+                            surface: "pavement"
+                        }
+                    },
+                    environment: {
+                        typicalWeather: {
+                            tempHigh: 26,
+                            tempLow: 16,
+                            humidity: 75,
+                            rainfall: "common",
+                            wind: {
+                                avgSpeed: 8,
+                                direction: "variable",
+                                gusty: false
+                            }
+                        },
+                        altitude: 210,
+                        airQuality: "good",
+                        sunExposure: "moderate"
+                    },
+                    historicalData: {
+                        avgFinishTime: "13:45:30",
+                        medianFinishTime: "13:30:15",
+                        finishRate: 75,
+                        dnfRate: 25
+                    },
+                    logistics: {
+                        cutoffTimes: {
+                            swim: "02:20:00",
+                            bike: "10:30:00",
+                            total: "17:00:00"
+                        },
+                        challengeRating: "expert"
+                    }
+                },
+                {
+                    id: "im-wisconsin-2026",
+                    name: "IRONMAN Wisconsin",
+                    location: {
+                        city: "Madison",
+                        state: "Wisconsin",
+                        country: "United States",
+                        coordinates: {"lat": 43.0642, "lng": -89.4008}
+                    },
+                    date: "2026-07-19",
+                    registrationOpen: true,
+                    raceWebsite: "https://www.ironman.com/races/im-wisconsin",
+                    course: {
+                        swim: {
+                            distance: 3800,
+                            type: "lake",
+                            waves: "moderate",
+                            current: "none",
+                            wetsuitLegal: true,
+                            avgWaterTemp: 22,
+                            loopCount: 1
+                        },
+                        bike: {
+                            distance: 180,
+                            elevationGain: 1850,
+                            elevationLoss: 1850,
+                            terrain: "hilly",
+                            loops: 2,
+                            technicalDifficulty: "hard",
+                            roadSurface: "good"
+                        },
+                        run: {
+                            distance: 42.2,
+                            elevationGain: 320,
+                            terrain: "hilly",
+                            loops: 2,
+                            surface: "pavement"
+                        }
+                    },
+                    environment: {
+                        typicalWeather: {
+                            tempHigh: 28,
+                            tempLow: 18,
+                            humidity: 65,
+                            rainfall: "occasional",
+                            wind: {
+                                avgSpeed: 10,
+                                direction: "variable",
+                                gusty: false
+                            }
+                        },
+                        altitude: 260,
+                        airQuality: "excellent",
+                        sunExposure: "moderate"
+                    },
+                    historicalData: {
+                        avgFinishTime: "13:30:45",
+                        medianFinishTime: "13:20:30",
+                        finishRate: 78,
+                        dnfRate: 22
+                    },
+                    logistics: {
+                        cutoffTimes: {
+                            swim: "02:20:00",
+                            bike: "10:30:00",
+                            total: "17:00:00"
+                        },
+                        challengeRating: "advanced"
+                    }
+                },
+                {
+                    id: "im-california-2026",
+                    name: "IRONMAN California",
+                    location: {
+                        city: "Sacramento",
+                        state: "California",
+                        country: "United States",
+                        coordinates: {"lat": 38.5816, "lng": -121.4944}
+                    },
+                    date: "2026-09-19",
+                    registrationOpen: true,
+                    raceWebsite: "https://www.ironman.com/races/im-california",
+                    course: {
+                        swim: {
+                            distance: 3800,
+                            type: "river",
+                            waves: "calm",
+                            current: "mild",
+                            wetsuitLegal: true,
+                            avgWaterTemp: 23,
+                            loopCount: 1
+                        },
+                        bike: {
+                            distance: 180,
+                            elevationGain: 680,
+                            elevationLoss: 680,
+                            terrain: "rolling",
+                            loops: 2,
+                            technicalDifficulty: "moderate",
+                            roadSurface: "excellent"
+                        },
+                        run: {
+                            distance: 42.2,
+                            elevationGain: 125,
+                            terrain: "flat",
+                            loops: 3,
+                            surface: "pavement"
+                        }
+                    },
+                    environment: {
+                        typicalWeather: {
+                            tempHigh: 30,
+                            tempLow: 16,
+                            humidity: 45,
+                            rainfall: "rare",
+                            wind: {
+                                avgSpeed: 8,
+                                direction: "variable",
+                                gusty: false
+                            }
+                        },
+                        altitude: 15,
+                        airQuality: "good",
+                        sunExposure: "high"
+                    },
+                    historicalData: {
+                        avgFinishTime: "12:50:15",
+                        medianFinishTime: "12:35:45",
+                        finishRate: 84,
+                        dnfRate: 16
+                    },
+                    logistics: {
+                        cutoffTimes: {
+                            swim: "02:20:00",
+                            bike: "10:30:00",
+                            total: "17:00:00"
+                        },
+                        challengeRating: "intermediate"
+                    }
+                },
+                {
+                    id: "im-kona-2026",
+                    name: "IRONMAN World Championship Kona",
+                    location: {
+                        city: "Kona",
+                        state: "Hawaii",
+                        country: "United States",
+                        coordinates: {"lat": 19.6389, "lng": -155.9969}
+                    },
+                    date: "2026-10-10",
+                    registrationOpen: false,
+                    raceWebsite: "https://www.ironman.com/races/world-championship",
+                    course: {
+                        swim: {
+                            distance: 3800,
+                            type: "ocean",
+                            waves: "moderate",
+                            current: "moderate",
+                            wetsuitLegal: false,
+                            avgWaterTemp: 26,
+                            loopCount: 1
+                        },
+                        bike: {
+                            distance: 180,
+                            elevationGain: 1350,
+                            elevationLoss: 1350,
+                            terrain: "rolling",
+                            loops: 1,
+                            technicalDifficulty: "hard",
+                            roadSurface: "good"
+                        },
+                        run: {
+                            distance: 42.2,
+                            elevationGain: 180,
+                            terrain: "rolling",
+                            loops: 1,
+                            surface: "pavement"
+                        }
+                    },
+                    environment: {
+                        typicalWeather: {
+                            tempHigh: 32,
+                            tempLow: 24,
+                            humidity: 65,
+                            rainfall: "rare",
+                            wind: {
+                                avgSpeed: 25,
+                                direction: "strong crosswind",
+                                gusty: true
+                            }
+                        },
+                        altitude: 50,
+                        airQuality: "excellent",
+                        sunExposure: "extreme"
+                    },
+                    historicalData: {
+                        avgFinishTime: "11:25:30",
+                        medianFinishTime: "11:15:45",
+                        finishRate: 95,
+                        dnfRate: 5
+                    },
+                    logistics: {
+                        cutoffTimes: {
+                            swim: "02:20:00",
+                            bike: "10:30:00",
+                            total: "17:00:00"
+                        },
+                        challengeRating: "expert"
+                    }
+                },
+                {
+                    id: "im-arizona-2026",
+                    name: "IRONMAN Arizona",
+                    location: {
+                        city: "Tempe",
+                        state: "Arizona",
+                        country: "United States",
+                        coordinates: {"lat": 33.4484, "lng": -111.9260}
+                    },
+                    date: "2026-11-15",
+                    registrationOpen: true,
+                    raceWebsite: "https://www.ironman.com/races/im-arizona",
+                    course: {
+                        swim: {
+                            distance: 3800,
+                            type: "lake",
+                            waves: "calm",
+                            current: "none",
+                            wetsuitLegal: true,
+                            avgWaterTemp: 20,
+                            loopCount: 1
+                        },
+                        bike: {
+                            distance: 180,
+                            elevationGain: 580,
+                            elevationLoss: 580,
+                            terrain: "rolling",
+                            loops: 3,
+                            technicalDifficulty: "moderate",
+                            roadSurface: "excellent"
+                        },
+                        run: {
+                            distance: 42.2,
+                            elevationGain: 150,
+                            terrain: "flat",
+                            loops: 3,
+                            surface: "pavement"
+                        }
+                    },
+                    environment: {
+                        typicalWeather: {
+                            tempHigh: 24,
+                            tempLow: 12,
+                            humidity: 45,
+                            rainfall: "rare",
+                            wind: {
+                                avgSpeed: 8,
+                                direction: "variable",
+                                gusty: false
+                            }
+                        },
+                        altitude: 350,
+                        airQuality: "good",
+                        sunExposure: "high"
+                    },
+                    historicalData: {
+                        avgFinishTime: "12:15:45",
+                        medianFinishTime: "12:05:30",
+                        finishRate: 88,
+                        dnfRate: 12
+                    },
+                    logistics: {
+                        cutoffTimes: {
+                            swim: "02:20:00",
+                            bike: "10:30:00",
+                            total: "17:00:00"
+                        },
+                        challengeRating: "intermediate"
+                    }
+                },
+                {
+                    id: "im-cozumel-2026",
+                    name: "IRONMAN Cozumel",
+                    location: {
+                        city: "Cozumel",
+                        state: "Quintana Roo",
+                        country: "Mexico",
+                        coordinates: {"lat": 20.4230, "lng": -86.9223}
+                    },
+                    date: "2026-11-29",
+                    registrationOpen: true,
+                    raceWebsite: "https://www.ironman.com/races/im-cozumel",
+                    course: {
+                        swim: {
+                            distance: 3800,
+                            type: "ocean",
+                            waves: "calm",
+                            current: "strong",
+                            wetsuitLegal: false,
+                            avgWaterTemp: 27,
+                            loopCount: 1
+                        },
+                        bike: {
+                            distance: 180,
+                            elevationGain: 450,
+                            elevationLoss: 450,
+                            terrain: "flat",
+                            loops: 3,
+                            technicalDifficulty: "easy",
+                            roadSurface: "good"
+                        },
+                        run: {
+                            distance: 42.2,
+                            elevationGain: 95,
+                            terrain: "flat",
+                            loops: 4,
+                            surface: "pavement"
+                        }
+                    },
+                    environment: {
+                        typicalWeather: {
+                            tempHigh: 29,
+                            tempLow: 24,
+                            humidity: 80,
+                            rainfall: "occasional",
+                            wind: {
+                                avgSpeed: 20,
+                                direction: "crosswind on bike",
+                                gusty: true
+                            }
+                        },
+                        altitude: 5,
+                        airQuality: "excellent",
+                        sunExposure: "high"
+                    },
+                    historicalData: {
+                        avgFinishTime: "12:55:30",
+                        medianFinishTime: "12:40:15",
+                        finishRate: 82,
+                        dnfRate: 18
+                    },
+                    logistics: {
+                        cutoffTimes: {
+                            swim: "02:20:00",
+                            bike: "10:30:00",
+                            total: "17:00:00"
+                        },
+                        challengeRating: "intermediate"
+                    }
+                },
+                {
+                    id: "im-western-australia-2026",
+                    name: "IRONMAN Western Australia",
+                    location: {
+                        city: "Busselton",
+                        state: "Western Australia",
+                        country: "Australia",
+                        coordinates: {"lat": -33.6500, "lng": 115.3400}
+                    },
+                    date: "2026-12-06",
+                    registrationOpen: true,
+                    raceWebsite: "https://www.ironman.com/races/im-western-australia",
+                    course: {
+                        swim: {
+                            distance: 3800,
+                            type: "ocean",
+                            waves: "moderate",
+                            current: "mild",
+                            wetsuitLegal: true,
+                            avgWaterTemp: 21,
+                            loopCount: 1
+                        },
+                        bike: {
+                            distance: 180,
+                            elevationGain: 750,
+                            elevationLoss: 750,
+                            terrain: "rolling",
+                            loops: 2,
+                            technicalDifficulty: "moderate",
+                            roadSurface: "excellent"
+                        },
+                        run: {
+                            distance: 42.2,
+                            elevationGain: 120,
+                            terrain: "flat",
+                            loops: 4,
+                            surface: "pavement"
+                        }
+                    },
+                    environment: {
+                        typicalWeather: {
+                            tempHigh: 26,
+                            tempLow: 18,
+                            humidity: 65,
+                            rainfall: "occasional",
+                            wind: {
+                                avgSpeed: 18,
+                                direction: "headwind on return",
+                                gusty: true
+                            }
+                        },
+                        altitude: 10,
+                        airQuality: "excellent",
+                        sunExposure: "high"
+                    },
+                    historicalData: {
+                        avgFinishTime: "12:35:20",
+                        medianFinishTime: "12:25:45",
+                        finishRate: 86,
+                        dnfRate: 14
+                    },
+                    logistics: {
+                        cutoffTimes: {
+                            swim: "02:20:00",
+                            bike: "10:30:00",
+                            total: "17:00:00"
+                        },
+                        challengeRating: "intermediate"
+                    }
+                },
+                {
+                    id: "im-france-2025",
+                    name: "IRONMAN France",
+                    location: {
+                        city: "Nice",
+                        state: "Provence-Alpes-Côte d'Azur",
+                        country: "France",
+                        coordinates: {"lat": 43.7102, "lng": 7.2620}
+                    },
+                    date: "2025-11-08",
+                    registrationOpen: true,
+                    raceWebsite: "https://www.ironman.com/races/im-france",
+                    course: {
+                        swim: {
+                            distance: 3800,
+                            type: "ocean",
+                            waves: "moderate",
+                            current: "mild",
+                            wetsuitLegal: true,
+                            avgWaterTemp: 19,
+                            loopCount: 1
+                        },
+                        bike: {
+                            distance: 180,
+                            elevationGain: 1800,
+                            elevationLoss: 1800,
+                            terrain: "hilly",
+                            loops: 2,
+                            technicalDifficulty: "hard",
+                            roadSurface: "excellent"
+                        },
+                        run: {
+                            distance: 42.2,
+                            elevationGain: 200,
+                            terrain: "rolling",
+                            loops: 3,
+                            surface: "pavement"
+                        }
+                    },
+                    environment: {
+                        typicalWeather: {
+                            tempHigh: 22,
+                            tempLow: 14,
+                            humidity: 70,
+                            rainfall: "occasional",
+                            wind: {
+                                avgSpeed: 12,
+                                direction: "variable",
+                                gusty: false
+                            }
+                        },
+                        altitude: 20,
+                        airQuality: "good",
+                        sunExposure: "moderate"
+                    },
+                    historicalData: {
+                        avgFinishTime: "13:10:30",
+                        medianFinishTime: "13:00:15",
+                        finishRate: 82,
+                        dnfRate: 18
+                    },
+                    logistics: {
+                        cutoffTimes: {
+                            swim: "02:20:00",
+                            bike: "10:30:00",
+                            total: "17:00:00"
+                        },
+                        challengeRating: "advanced"
+                    }
+                },
+                {
+                    id: "im-barcelona-2026",
+                    name: "IRONMAN Barcelona",
+                    location: {
+                        city: "Barcelona",
+                        state: "Catalonia",
+                        country: "Spain",
+                        coordinates: {"lat": 41.3851, "lng": 2.1734}
+                    },
+                    date: "2026-01-25",
+                    registrationOpen: true,
+                    raceWebsite: "https://www.ironman.com/races/im-barcelona",
+                    course: {
+                        swim: {
+                            distance: 3800,
+                            type: "ocean",
+                            waves: "calm",
+                            current: "mild",
+                            wetsuitLegal: true,
+                            avgWaterTemp: 16,
+                            loopCount: 1
+                        },
+                        bike: {
+                            distance: 180,
+                            elevationGain: 950,
+                            elevationLoss: 950,
+                            terrain: "rolling",
+                            loops: 3,
+                            technicalDifficulty: "moderate",
+                            roadSurface: "excellent"
+                        },
+                        run: {
+                            distance: 42.2,
+                            elevationGain: 120,
+                            terrain: "flat",
+                            loops: 4,
+                            surface: "pavement"
+                        }
+                    },
+                    environment: {
+                        typicalWeather: {
+                            tempHigh: 18,
+                            tempLow: 8,
+                            humidity: 65,
+                            rainfall: "occasional",
+                            wind: {
+                                avgSpeed: 15,
+                                direction: "coastal breeze",
+                                gusty: true
+                            }
+                        },
+                        altitude: 10,
+                        airQuality: "good",
+                        sunExposure: "moderate"
+                    },
+                    historicalData: {
+                        avgFinishTime: "12:45:30",
+                        medianFinishTime: "12:35:15",
+                        finishRate: 85,
+                        dnfRate: 15
+                    },
+                    logistics: {
+                        cutoffTimes: {
+                            swim: "02:20:00",
+                            bike: "10:30:00",
+                            total: "17:00:00"
+                        },
+                        challengeRating: "intermediate"
+                    }
+                },
+                {
+                    id: "im-lanzarote-2026",
+                    name: "IRONMAN Lanzarote",
+                    location: {
+                        city: "Puerto del Carmen",
+                        state: "Canary Islands",
+                        country: "Spain",
+                        coordinates: {"lat": 28.9632, "lng": -13.6617}
+                    },
+                    date: "2026-02-15",
+                    registrationOpen: true,
+                    raceWebsite: "https://www.ironman.com/races/im-lanzarote",
+                    course: {
+                        swim: {
+                            distance: 3800,
+                            type: "ocean",
+                            waves: "moderate",
+                            current: "strong",
+                            wetsuitLegal: false,
+                            avgWaterTemp: 20,
+                            loopCount: 1
+                        },
+                        bike: {
+                            distance: 180,
+                            elevationGain: 2500,
+                            elevationLoss: 2500,
+                            terrain: "mountainous",
+                            loops: 1,
+                            technicalDifficulty: "expert",
+                            roadSurface: "good"
+                        },
+                        run: {
+                            distance: 42.2,
+                            elevationGain: 400,
+                            terrain: "hilly",
+                            loops: 2,
+                            surface: "pavement"
+                        }
+                    },
+                    environment: {
+                        typicalWeather: {
+                            tempHigh: 22,
+                            tempLow: 16,
+                            humidity: 70,
+                            rainfall: "rare",
+                            wind: {
+                                avgSpeed: 25,
+                                direction: "strong crosswind",
+                                gusty: true
+                            }
+                        },
+                        altitude: 50,
+                        airQuality: "excellent",
+                        sunExposure: "high"
+                    },
+                    historicalData: {
+                        avgFinishTime: "14:30:15",
+                        medianFinishTime: "14:15:45",
+                        finishRate: 72,
+                        dnfRate: 28
+                    },
+                    logistics: {
+                        cutoffTimes: {
+                            swim: "02:20:00",
+                            bike: "10:30:00",
+                            total: "17:00:00"
+                        },
+                        challengeRating: "expert"
+                    }
+                },
+                {
+                    id: "im-italy-2026",
+                    name: "IRONMAN Italy",
+                    location: {
+                        city: "Cervia",
+                        state: "Emilia-Romagna",
+                        country: "Italy",
+                        coordinates: {"lat": 44.2603, "lng": 12.3475}
+                    },
+                    date: "2026-03-14",
+                    registrationOpen: true,
+                    raceWebsite: "https://www.ironman.com/races/im-italy",
+                    course: {
+                        swim: {
+                            distance: 3800,
+                            type: "ocean",
+                            waves: "calm",
+                            current: "none",
+                            wetsuitLegal: true,
+                            avgWaterTemp: 16,
+                            loopCount: 1
+                        },
+                        bike: {
+                            distance: 180,
+                            elevationGain: 650,
+                            elevationLoss: 650,
+                            terrain: "flat",
+                            loops: 3,
+                            technicalDifficulty: "easy",
+                            roadSurface: "excellent"
+                        },
+                        run: {
+                            distance: 42.2,
+                            elevationGain: 80,
+                            terrain: "flat",
+                            loops: 4,
+                            surface: "pavement"
+                        }
+                    },
+                    environment: {
+                        typicalWeather: {
+                            tempHigh: 19,
+                            tempLow: 10,
+                            humidity: 65,
+                            rainfall: "occasional",
+                            wind: {
+                                avgSpeed: 10,
+                                direction: "light variable",
+                                gusty: false
+                            }
+                        },
+                        altitude: 5,
+                        airQuality: "good",
+                        sunExposure: "moderate"
+                    },
+                    historicalData: {
+                        avgFinishTime: "12:20:30",
+                        medianFinishTime: "12:10:15",
+                        finishRate: 88,
+                        dnfRate: 12
+                    },
+                    logistics: {
+                        cutoffTimes: {
+                            swim: "02:20:00",
+                            bike: "10:30:00",
+                            total: "17:00:00"
+                        },
+                        challengeRating: "beginner"
+                    }
+                },
+                {
+                    id: "im-austria-2026",
+                    name: "IRONMAN Austria",
+                    location: {
+                        city: "Klagenfurt",
+                        state: "Carinthia",
+                        country: "Austria",
+                        coordinates: {"lat": 46.6247, "lng": 14.3055}
+                    },
+                    date: "2026-04-25",
+                    registrationOpen: true,
+                    raceWebsite: "https://www.ironman.com/races/im-austria",
+                    course: {
+                        swim: {
+                            distance: 3800,
+                            type: "lake",
+                            waves: "calm",
+                            current: "none",
+                            wetsuitLegal: true,
+                            avgWaterTemp: 18,
+                            loopCount: 1
+                        },
+                        bike: {
+                            distance: 180,
+                            elevationGain: 1750,
+                            elevationLoss: 1750,
+                            terrain: "hilly",
+                            loops: 2,
+                            technicalDifficulty: "hard",
+                            roadSurface: "excellent"
+                        },
+                        run: {
+                            distance: 42.2,
+                            elevationGain: 180,
+                            terrain: "rolling",
+                            loops: 4,
+                            surface: "pavement"
+                        }
+                    },
+                    environment: {
+                        typicalWeather: {
+                            tempHigh: 20,
+                            tempLow: 10,
+                            humidity: 60,
+                            rainfall: "occasional",
+                            wind: {
+                                avgSpeed: 8,
+                                direction: "variable",
+                                gusty: false
+                            }
+                        },
+                        altitude: 450,
+                        airQuality: "excellent",
+                        sunExposure: "moderate"
+                    },
+                    historicalData: {
+                        avgFinishTime: "13:05:30",
+                        medianFinishTime: "12:55:15",
+                        finishRate: 83,
+                        dnfRate: 17
+                    },
+                    logistics: {
+                        cutoffTimes: {
+                            swim: "02:20:00",
+                            bike: "10:30:00",
+                            total: "17:00:00"
+                        },
+                        challengeRating: "advanced"
+                    }
+                },
+                {
+                    id: "im-germany-2026",
+                    name: "IRONMAN Germany",
+                    location: {
+                        city: "Frankfurt",
+                        state: "Hesse",
+                        country: "Germany",
+                        coordinates: {"lat": 50.1109, "lng": 8.6821}
+                    },
+                    date: "2026-05-24",
+                    registrationOpen: true,
+                    raceWebsite: "https://www.ironman.com/races/im-germany",
+                    course: {
+                        swim: {
+                            distance: 3800,
+                            type: "lake",
+                            waves: "calm",
+                            current: "none",
+                            wetsuitLegal: true,
+                            avgWaterTemp: 19,
+                            loopCount: 2
+                        },
+                        bike: {
+                            distance: 180,
+                            elevationGain: 1200,
+                            elevationLoss: 1200,
+                            terrain: "rolling",
+                            loops: 2,
+                            technicalDifficulty: "moderate",
+                            roadSurface: "excellent"
+                        },
+                        run: {
+                            distance: 42.2,
+                            elevationGain: 150,
+                            terrain: "rolling",
+                            loops: 4,
+                            surface: "pavement"
+                        }
+                    },
+                    environment: {
+                        typicalWeather: {
+                            tempHigh: 23,
+                            tempLow: 13,
+                            humidity: 65,
+                            rainfall: "occasional",
+                            wind: {
+                                avgSpeed: 10,
+                                direction: "variable",
+                                gusty: false
+                            }
+                        },
+                        altitude: 112,
+                        airQuality: "good",
+                        sunExposure: "moderate"
+                    },
+                    historicalData: {
+                        avgFinishTime: "12:50:30",
+                        medianFinishTime: "12:40:15",
+                        finishRate: 85,
+                        dnfRate: 15
+                    },
+                    logistics: {
+                        cutoffTimes: {
+                            swim: "02:20:00",
+                            bike: "10:30:00",
+                            total: "17:00:00"
+                        },
+                        challengeRating: "intermediate"
+                    }
+                },
+                {
+                    id: "im-sweden-2026",
+                    name: "IRONMAN Sweden",
+                    location: {
+                        city: "Kalmar",
+                        state: "Småland",
+                        country: "Sweden",
+                        coordinates: {"lat": 56.6634, "lng": 16.3567}
+                    },
+                    date: "2026-06-07",
+                    registrationOpen: true,
+                    raceWebsite: "https://www.ironman.com/races/im-sweden",
+                    course: {
+                        swim: {
+                            distance: 3800,
+                            type: "ocean",
+                            waves: "calm",
+                            current: "mild",
+                            wetsuitLegal: true,
+                            avgWaterTemp: 17,
+                            loopCount: 1
+                        },
+                        bike: {
+                            distance: 180,
+                            elevationGain: 480,
+                            elevationLoss: 480,
+                            terrain: "flat",
+                            loops: 3,
+                            technicalDifficulty: "easy",
+                            roadSurface: "excellent"
+                        },
+                        run: {
+                            distance: 42.2,
+                            elevationGain: 60,
+                            terrain: "flat",
+                            loops: 4,
+                            surface: "pavement"
+                        }
+                    },
+                    environment: {
+                        typicalWeather: {
+                            tempHigh: 20,
+                            tempLow: 12,
+                            humidity: 70,
+                            rainfall: "occasional",
+                            wind: {
+                                avgSpeed: 12,
+                                direction: "coastal",
+                                gusty: false
+                            }
+                        },
+                        altitude: 15,
+                        airQuality: "excellent",
+                        sunExposure: "moderate"
+                    },
+                    historicalData: {
+                        avgFinishTime: "12:15:30",
+                        medianFinishTime: "12:05:15",
+                        finishRate: 90,
+                        dnfRate: 10
+                    },
+                    logistics: {
+                        cutoffTimes: {
+                            swim: "02:20:00",
+                            bike: "10:30:00",
+                            total: "17:00:00"
+                        },
+                        challengeRating: "beginner"
+                    }
+                },
+                {
+                    id: "im-switzerland-2026",
+                    name: "IRONMAN Switzerland",
+                    location: {
+                        city: "Zurich",
+                        state: "Zurich",
+                        country: "Switzerland",
+                        coordinates: {"lat": 47.3769, "lng": 8.5417}
+                    },
+                    date: "2026-06-21",
+                    registrationOpen: true,
+                    raceWebsite: "https://www.ironman.com/races/im-switzerland",
+                    course: {
+                        swim: {
+                            distance: 3800,
+                            type: "lake",
+                            waves: "calm",
+                            current: "none",
+                            wetsuitLegal: true,
+                            avgWaterTemp: 20,
+                            loopCount: 1
+                        },
+                        bike: {
+                            distance: 180,
+                            elevationGain: 2100,
+                            elevationLoss: 2100,
+                            terrain: "mountainous",
+                            loops: 1,
+                            technicalDifficulty: "expert",
+                            roadSurface: "excellent"
+                        },
+                        run: {
+                            distance: 42.2,
+                            elevationGain: 350,
+                            terrain: "hilly",
+                            loops: 2,
+                            surface: "pavement"
+                        }
+                    },
+                    environment: {
+                        typicalWeather: {
+                            tempHigh: 24,
+                            tempLow: 14,
+                            humidity: 60,
+                            rainfall: "occasional",
+                            wind: {
+                                avgSpeed: 8,
+                                direction: "variable",
+                                gusty: false
+                            }
+                        },
+                        altitude: 410,
+                        airQuality: "excellent",
+                        sunExposure: "moderate"
+                    },
+                    historicalData: {
+                        avgFinishTime: "13:45:30",
+                        medianFinishTime: "13:30:15",
+                        finishRate: 78,
+                        dnfRate: 22
+                    },
+                    logistics: {
+                        cutoffTimes: {
+                            swim: "02:20:00",
+                            bike: "10:30:00",
+                            total: "17:00:00"
+                        },
+                        challengeRating: "expert"
+                    }
+                },
+                {
+                    id: "im-uk-2026",
+                    name: "IRONMAN UK",
+                    location: {
+                        city: "Bolton",
+                        state: "England",
+                        country: "United Kingdom",
+                        coordinates: {"lat": 53.5768, "lng": -2.4282}
+                    },
+                    date: "2026-07-12",
+                    registrationOpen: true,
+                    raceWebsite: "https://www.ironman.com/races/im-uk",
+                    course: {
+                        swim: {
+                            distance: 3800,
+                            type: "lake",
+                            waves: "calm",
+                            current: "none",
+                            wetsuitLegal: true,
+                            avgWaterTemp: 18,
+                            loopCount: 2
+                        },
+                        bike: {
+                            distance: 180,
+                            elevationGain: 1680,
+                            elevationLoss: 1680,
+                            terrain: "hilly",
+                            loops: 2,
+                            technicalDifficulty: "hard",
+                            roadSurface: "good"
+                        },
+                        run: {
+                            distance: 42.2,
+                            elevationGain: 280,
+                            terrain: "hilly",
+                            loops: 2,
+                            surface: "pavement"
+                        }
+                    },
+                    environment: {
+                        typicalWeather: {
+                            tempHigh: 21,
+                            tempLow: 12,
+                            humidity: 75,
+                            rainfall: "common",
+                            wind: {
+                                avgSpeed: 15,
+                                direction: "variable",
+                                gusty: true
+                            }
+                        },
+                        altitude: 180,
+                        airQuality: "good",
+                        sunExposure: "moderate"
+                    },
+                    historicalData: {
+                        avgFinishTime: "13:20:30",
+                        medianFinishTime: "13:10:15",
+                        finishRate: 80,
+                        dnfRate: 20
+                    },
+                    logistics: {
+                        cutoffTimes: {
+                            swim: "02:20:00",
+                            bike: "10:30:00",
+                            total: "17:00:00"
+                        },
+                        challengeRating: "advanced"
+                    }
+                },
+                {
+                    id: "im-japan-2026",
+                    name: "IRONMAN Japan",
+                    location: {
+                        city: "Hokkaido",
+                        state: "Hokkaido",
+                        country: "Japan",
+                        coordinates: {"lat": 43.2203, "lng": 142.8635}
+                    },
+                    date: "2026-03-21",
+                    registrationOpen: true,
+                    raceWebsite: "https://www.ironman.com/races/im-japan",
+                    course: {
+                        swim: {
+                            distance: 3800,
+                            type: "lake",
+                            waves: "calm",
+                            current: "none",
+                            wetsuitLegal: true,
+                            avgWaterTemp: 15,
+                            loopCount: 1
+                        },
+                        bike: {
+                            distance: 180,
+                            elevationGain: 1400,
+                            elevationLoss: 1400,
+                            terrain: "hilly",
+                            loops: 2,
+                            technicalDifficulty: "moderate",
+                            roadSurface: "excellent"
+                        },
+                        run: {
+                            distance: 42.2,
+                            elevationGain: 220,
+                            terrain: "rolling",
+                            loops: 3,
+                            surface: "pavement"
+                        }
+                    },
+                    environment: {
+                        typicalWeather: {
+                            tempHigh: 16,
+                            tempLow: 6,
+                            humidity: 70,
+                            rainfall: "occasional",
+                            wind: {
+                                avgSpeed: 12,
+                                direction: "variable",
+                                gusty: false
+                            }
+                        },
+                        altitude: 200,
+                        airQuality: "excellent",
+                        sunExposure: "moderate"
+                    },
+                    historicalData: {
+                        avgFinishTime: "13:00:30",
+                        medianFinishTime: "12:50:15",
+                        finishRate: 84,
+                        dnfRate: 16
+                    },
+                    logistics: {
+                        cutoffTimes: {
+                            swim: "02:20:00",
+                            bike: "10:30:00",
+                            total: "17:00:00"
+                        },
+                        challengeRating: "intermediate"
+                    }
+                },
+                {
+                    id: "im-korea-2026",
+                    name: "IRONMAN Korea",
+                    location: {
+                        city: "Gurye",
+                        state: "South Jeolla",
+                        country: "South Korea",
+                        coordinates: {"lat": 35.2122, "lng": 127.4644}
+                    },
+                    date: "2026-04-05",
+                    registrationOpen: true,
+                    raceWebsite: "https://www.ironman.com/races/im-korea",
+                    course: {
+                        swim: {
+                            distance: 3800,
+                            type: "river",
+                            waves: "calm",
+                            current: "mild",
+                            wetsuitLegal: true,
+                            avgWaterTemp: 17,
+                            loopCount: 1
+                        },
+                        bike: {
+                            distance: 180,
+                            elevationGain: 1950,
+                            elevationLoss: 1950,
+                            terrain: "mountainous",
+                            loops: 1,
+                            technicalDifficulty: "hard",
+                            roadSurface: "excellent"
+                        },
+                        run: {
+                            distance: 42.2,
+                            elevationGain: 320,
+                            terrain: "hilly",
+                            loops: 2,
+                            surface: "pavement"
+                        }
+                    },
+                    environment: {
+                        typicalWeather: {
+                            tempHigh: 19,
+                            tempLow: 9,
+                            humidity: 65,
+                            rainfall: "occasional",
+                            wind: {
+                                avgSpeed: 10,
+                                direction: "variable",
+                                gusty: false
+                            }
+                        },
+                        altitude: 150,
+                        airQuality: "good",
+                        sunExposure: "moderate"
+                    },
+                    historicalData: {
+                        avgFinishTime: "13:35:30",
+                        medianFinishTime: "13:25:15",
+                        finishRate: 79,
+                        dnfRate: 21
+                    },
+                    logistics: {
+                        cutoffTimes: {
+                            swim: "02:20:00",
+                            bike: "10:30:00",
+                            total: "17:00:00"
+                        },
+                        challengeRating: "advanced"
+                    }
+                },
+                {
+                    id: "im-taiwan-2026",
+                    name: "IRONMAN Taiwan",
+                    location: {
+                        city: "Penghu",
+                        state: "Penghu County",
+                        country: "Taiwan",
+                        coordinates: {"lat": 23.5711, "lng": 119.5789}
+                    },
+                    date: "2026-05-03",
+                    registrationOpen: true,
+                    raceWebsite: "https://www.ironman.com/races/im-taiwan",
+                    course: {
+                        swim: {
+                            distance: 3800,
+                            type: "ocean",
+                            waves: "moderate",
+                            current: "moderate",
+                            wetsuitLegal: false,
+                            avgWaterTemp: 24,
+                            loopCount: 1
+                        },
+                        bike: {
+                            distance: 180,
+                            elevationGain: 680,
+                            elevationLoss: 680,
+                            terrain: "rolling",
+                            loops: 3,
+                            technicalDifficulty: "moderate",
+                            roadSurface: "good"
+                        },
+                        run: {
+                            distance: 42.2,
+                            elevationGain: 95,
+                            terrain: "flat",
+                            loops: 4,
+                            surface: "pavement"
+                        }
+                    },
+                    environment: {
+                        typicalWeather: {
+                            tempHigh: 28,
+                            tempLow: 22,
+                            humidity: 80,
+                            rainfall: "common",
+                            wind: {
+                                avgSpeed: 18,
+                                direction: "strong coastal",
+                                gusty: true
+                            }
+                        },
+                        altitude: 20,
+                        airQuality: "good",
+                        sunExposure: "high"
+                    },
+                    historicalData: {
+                        avgFinishTime: "12:55:30",
+                        medianFinishTime: "12:45:15",
+                        finishRate: 83,
+                        dnfRate: 17
+                    },
+                    logistics: {
+                        cutoffTimes: {
+                            swim: "02:20:00",
+                            bike: "10:30:00",
+                            total: "17:00:00"
+                        },
+                        challengeRating: "intermediate"
+                    }
+                },
+                {
+                    id: "im-china-2026",
+                    name: "IRONMAN China",
+                    location: {
+                        city: "Xiamen",
+                        state: "Fujian",
+                        country: "China",
+                        coordinates: {"lat": 24.4798, "lng": 118.0894}
+                    },
+                    date: "2026-05-17",
+                    registrationOpen: true,
+                    raceWebsite: "https://www.ironman.com/races/im-china",
+                    course: {
+                        swim: {
+                            distance: 3800,
+                            type: "ocean",
+                            waves: "moderate",
+                            current: "mild",
+                            wetsuitLegal: false,
+                            avgWaterTemp: 25,
+                            loopCount: 1
+                        },
+                        bike: {
+                            distance: 180,
+                            elevationGain: 850,
+                            elevationLoss: 850,
+                            terrain: "rolling",
+                            loops: 2,
+                            technicalDifficulty: "moderate",
+                            roadSurface: "good"
+                        },
+                        run: {
+                            distance: 42.2,
+                            elevationGain: 140,
+                            terrain: "rolling",
+                            loops: 3,
+                            surface: "pavement"
+                        }
+                    },
+                    environment: {
+                        typicalWeather: {
+                            tempHigh: 27,
+                            tempLow: 20,
+                            humidity: 75,
+                            rainfall: "occasional",
+                            wind: {
+                                avgSpeed: 14,
+                                direction: "coastal variable",
+                                gusty: false
+                            }
+                        },
+                        altitude: 15,
+                        airQuality: "moderate",
+                        sunExposure: "high"
+                    },
+                    historicalData: {
+                        avgFinishTime: "13:10:30",
+                        medianFinishTime: "13:00:15",
+                        finishRate: 81,
+                        dnfRate: 19
+                    },
+                    logistics: {
+                        cutoffTimes: {
+                            swim: "02:20:00",
+                            bike: "10:30:00",
+                            total: "17:00:00"
+                        },
+                        challengeRating: "intermediate"
+                    }
+                },
+                {
+                    id: "im-south-africa-2026",
+                    name: "IRONMAN South Africa",
+                    location: {
+                        city: "Port Elizabeth",
+                        state: "Eastern Cape",
+                        country: "South Africa",
+                        coordinates: {"lat": -33.9608, "lng": 25.6022}
+                    },
+                    date: "2026-06-28",
+                    registrationOpen: true,
+                    raceWebsite: "https://www.ironman.com/races/im-south-africa",
+                    course: {
+                        swim: {
+                            distance: 3800,
+                            type: "ocean",
+                            waves: "moderate",
+                            current: "strong",
+                            wetsuitLegal: true,
+                            avgWaterTemp: 19,
+                            loopCount: 1
+                        },
+                        bike: {
+                            distance: 180,
+                            elevationGain: 1650,
+                            elevationLoss: 1650,
+                            terrain: "hilly",
+                            loops: 2,
+                            technicalDifficulty: "hard",
+                            roadSurface: "good"
+                        },
+                        run: {
+                            distance: 42.2,
+                            elevationGain: 250,
+                            terrain: "rolling",
+                            loops: 3,
+                            surface: "pavement"
+                        }
+                    },
+                    environment: {
+                        typicalWeather: {
+                            tempHigh: 22,
+                            tempLow: 12,
+                            humidity: 70,
+                            rainfall: "occasional",
+                            wind: {
+                                avgSpeed: 20,
+                                direction: "strong coastal",
+                                gusty: true
+                            }
+                        },
+                        altitude: 60,
+                        airQuality: "good",
+                        sunExposure: "moderate"
+                    },
+                    historicalData: {
+                        avgFinishTime: "13:25:30",
+                        medianFinishTime: "13:15:15",
+                        finishRate: 79,
+                        dnfRate: 21
+                    },
+                    logistics: {
+                        cutoffTimes: {
+                            swim: "02:20:00",
+                            bike: "10:30:00",
+                            total: "17:00:00"
+                        },
+                        challengeRating: "advanced"
+                    }
+                },
+                {
+                    id: "im-brazil-2026",
+                    name: "IRONMAN Brazil",
+                    location: {
+                        city: "Florianópolis",
+                        state: "Santa Catarina",
+                        country: "Brazil",
+                        coordinates: {"lat": -27.5954, "lng": -48.5480}
+                    },
+                    date: "2026-08-16",
+                    registrationOpen: true,
+                    raceWebsite: "https://www.ironman.com/races/im-brazil",
+                    course: {
+                        swim: {
+                            distance: 3800,
+                            type: "ocean",
+                            waves: "moderate",
+                            current: "mild",
+                            wetsuitLegal: true,
+                            avgWaterTemp: 20,
+                            loopCount: 1
+                        },
+                        bike: {
+                            distance: 180,
+                            elevationGain: 1150,
+                            elevationLoss: 1150,
+                            terrain: "rolling",
+                            loops: 2,
+                            technicalDifficulty: "moderate",
+                            roadSurface: "good"
+                        },
+                        run: {
+                            distance: 42.2,
+                            elevationGain: 180,
+                            terrain: "rolling",
+                            loops: 3,
+                            surface: "pavement"
+                        }
+                    },
+                    environment: {
+                        typicalWeather: {
+                            tempHigh: 24,
+                            tempLow: 16,
+                            humidity: 75,
+                            rainfall: "occasional",
+                            wind: {
+                                avgSpeed: 15,
+                                direction: "coastal variable",
+                                gusty: false
+                            }
+                        },
+                        altitude: 25,
+                        airQuality: "good",
+                        sunExposure: "moderate"
+                    },
+                    historicalData: {
+                        avgFinishTime: "12:50:30",
+                        medianFinishTime: "12:40:15",
+                        finishRate: 84,
+                        dnfRate: 16
+                    },
+                    logistics: {
+                        cutoffTimes: {
+                            swim: "02:20:00",
+                            bike: "10:30:00",
+                            total: "17:00:00"
+                        },
+                        challengeRating: "intermediate"
+                    }
+                },
+                {
+                    id: "im-canada-2026",
+                    name: "IRONMAN Canada",
+                    location: {
+                        city: "Whistler",
+                        state: "British Columbia",
+                        country: "Canada",
+                        coordinates: {"lat": 50.1163, "lng": -122.9574}
+                    },
+                    date: "2026-09-06",
+                    registrationOpen: true,
+                    raceWebsite: "https://www.ironman.com/races/im-canada",
+                    course: {
+                        swim: {
+                            distance: 3800,
+                            type: "lake",
+                            waves: "calm",
+                            current: "none",
+                            wetsuitLegal: true,
+                            avgWaterTemp: 18,
+                            loopCount: 1
+                        },
+                        bike: {
+                            distance: 180,
+                            elevationGain: 2200,
+                            elevationLoss: 2200,
+                            terrain: "mountainous",
+                            loops: 1,
+                            technicalDifficulty: "expert",
+                            roadSurface: "excellent"
+                        },
+                        run: {
+                            distance: 42.2,
+                            elevationGain: 400,
+                            terrain: "hilly",
+                            loops: 2,
+                            surface: "pavement"
+                        }
+                    },
+                    environment: {
+                        typicalWeather: {
+                            tempHigh: 22,
+                            tempLow: 12,
+                            humidity: 65,
+                            rainfall: "occasional",
+                            wind: {
+                                avgSpeed: 8,
+                                direction: "variable",
+                                gusty: false
+                            }
+                        },
+                        altitude: 670,
+                        airQuality: "excellent",
+                        sunExposure: "moderate"
+                    },
+                    historicalData: {
+                        avgFinishTime: "14:10:30",
+                        medianFinishTime: "13:55:15",
+                        finishRate: 75,
+                        dnfRate: 25
+                    },
+                    logistics: {
+                        cutoffTimes: {
+                            swim: "02:20:00",
+                            bike: "10:30:00",
+                            total: "17:00:00"
+                        },
+                        challengeRating: "expert"
+                    }
+                },
+                {
+                    id: "im-mexico-2026",
+                    name: "IRONMAN Mexico",
+                    location: {
+                        city: "Los Cabos",
+                        state: "Baja California Sur",
+                        country: "Mexico",
+                        coordinates: {"lat": 22.8905, "lng": -109.9167}
+                    },
+                    date: "2026-10-25",
+                    registrationOpen: true,
+                    raceWebsite: "https://www.ironman.com/races/im-mexico",
+                    course: {
+                        swim: {
+                            distance: 3800,
+                            type: "ocean",
+                            waves: "moderate",
+                            current: "mild",
+                            wetsuitLegal: false,
+                            avgWaterTemp: 26,
+                            loopCount: 1
+                        },
+                        bike: {
+                            distance: 180,
+                            elevationGain: 950,
+                            elevationLoss: 950,
+                            terrain: "rolling",
+                            loops: 2,
+                            technicalDifficulty: "moderate",
+                            roadSurface: "good"
+                        },
+                        run: {
+                            distance: 42.2,
+                            elevationGain: 150,
+                            terrain: "rolling",
+                            loops: 3,
+                            surface: "pavement"
+                        }
+                    },
+                    environment: {
+                        typicalWeather: {
+                            tempHigh: 30,
+                            tempLow: 22,
+                            humidity: 65,
+                            rainfall: "rare",
+                            wind: {
+                                avgSpeed: 12,
+                                direction: "coastal variable",
+                                gusty: false
+                            }
+                        },
+                        altitude: 20,
+                        airQuality: "good",
+                        sunExposure: "high"
+                    },
+                    historicalData: {
+                        avgFinishTime: "13:05:30",
+                        medianFinishTime: "12:55:15",
+                        finishRate: 82,
+                        dnfRate: 18
+                    },
+                    logistics: {
+                        cutoffTimes: {
+                            swim: "02:20:00",
+                            bike: "10:30:00",
+                            total: "17:00:00"
+                        },
+                        challengeRating: "intermediate"
+                    }
+                },
+                {
+                    id: "im-maryland-2026",
+                    name: "IRONMAN Maryland",
+                    location: {
+                        city: "Cambridge",
+                        state: "Maryland",
+                        country: "United States",
+                        coordinates: {"lat": 38.5630, "lng": -76.0783}
+                    },
+                    date: "2026-08-30",
+                    registrationOpen: true,
+                    raceWebsite: "https://www.ironman.com/races/im-maryland",
+                    course: {
+                        swim: {
+                            distance: 3800,
+                            type: "river",
+                            waves: "calm",
+                            current: "mild",
+                            wetsuitLegal: true,
+                            avgWaterTemp: 24,
+                            loopCount: 1
+                        },
+                        bike: {
+                            distance: 180,
+                            elevationGain: 320,
+                            elevationLoss: 320,
+                            terrain: "flat",
+                            loops: 2,
+                            technicalDifficulty: "easy",
+                            roadSurface: "excellent"
+                        },
+                        run: {
+                            distance: 42.2,
+                            elevationGain: 65,
+                            terrain: "flat",
+                            loops: 3,
+                            surface: "pavement"
+                        }
+                    },
+                    environment: {
+                        typicalWeather: {
+                            tempHigh: 29,
+                            tempLow: 20,
+                            humidity: 80,
+                            rainfall: "occasional",
+                            wind: {
+                                avgSpeed: 10,
+                                direction: "variable",
+                                gusty: false
+                            }
+                        },
+                        altitude: 10,
+                        airQuality: "good",
+                        sunExposure: "high"
+                    },
+                    historicalData: {
+                        avgFinishTime: "12:30:30",
+                        medianFinishTime: "12:20:15",
+                        finishRate: 87,
+                        dnfRate: 13
+                    },
+                    logistics: {
+                        cutoffTimes: {
+                            swim: "02:20:00",
+                            bike: "10:30:00",
+                            total: "17:00:00"
+                        },
+                        challengeRating: "beginner"
+                    }
+                },
+                {
+                    id: "im-lake-placid-2026",
+                    name: "IRONMAN Lake Placid",
+                    location: {
+                        city: "Lake Placid",
+                        state: "New York",
+                        country: "United States",
+                        coordinates: {"lat": 44.2795, "lng": -73.9799}
+                    },
+                    date: "2026-09-27",
+                    registrationOpen: true,
+                    raceWebsite: "https://www.ironman.com/races/im-lake-placid",
+                    course: {
+                        swim: {
+                            distance: 3800,
+                            type: "lake",
+                            waves: "calm",
+                            current: "none",
+                            wetsuitLegal: true,
+                            avgWaterTemp: 20,
+                            loopCount: 2
+                        },
+                        bike: {
+                            distance: 180,
+                            elevationGain: 2100,
+                            elevationLoss: 2100,
+                            terrain: "mountainous",
+                            loops: 2,
+                            technicalDifficulty: "expert",
+                            roadSurface: "good"
+                        },
+                        run: {
+                            distance: 42.2,
+                            elevationGain: 380,
+                            terrain: "hilly",
+                            loops: 2,
+                            surface: "pavement"
+                        }
+                    },
+                    environment: {
+                        typicalWeather: {
+                            tempHigh: 23,
+                            tempLow: 13,
+                            humidity: 65,
+                            rainfall: "occasional",
+                            wind: {
+                                avgSpeed: 8,
+                                direction: "variable",
+                                gusty: false
+                            }
+                        },
+                        altitude: 560,
+                        airQuality: "excellent",
+                        sunExposure: "moderate"
+                    },
+                    historicalData: {
+                        avgFinishTime: "14:05:30",
+                        medianFinishTime: "13:50:15",
+                        finishRate: 76,
+                        dnfRate: 24
+                    },
+                    logistics: {
+                        cutoffTimes: {
+                            swim: "02:20:00",
+                            bike: "10:30:00",
+                            total: "17:00:00"
+                        },
+                        challengeRating: "expert"
+                    }
+                },
+                {
+                    id: "im-louisville-2026",
+                    name: "IRONMAN Louisville",
+                    location: {
+                        city: "Louisville",
+                        state: "Kentucky",
+                        country: "United States",
+                        coordinates: {"lat": 38.2527, "lng": -85.7585}
+                    },
+                    date: "2026-10-04",
+                    registrationOpen: true,
+                    raceWebsite: "https://www.ironman.com/races/im-louisville",
+                    course: {
+                        swim: {
+                            distance: 3800,
+                            type: "river",
+                            waves: "calm",
+                            current: "strong",
+                            wetsuitLegal: true,
+                            avgWaterTemp: 22,
+                            loopCount: 1
+                        },
+                        bike: {
+                            distance: 180,
+                            elevationGain: 1250,
+                            elevationLoss: 1250,
+                            terrain: "rolling",
+                            loops: 2,
+                            technicalDifficulty: "moderate",
+                            roadSurface: "excellent"
+                        },
+                        run: {
+                            distance: 42.2,
+                            elevationGain: 180,
+                            terrain: "rolling",
+                            loops: 3,
+                            surface: "pavement"
+                        }
+                    },
+                    environment: {
+                        typicalWeather: {
+                            tempHigh: 26,
+                            tempLow: 16,
+                            humidity: 70,
+                            rainfall: "occasional",
+                            wind: {
+                                avgSpeed: 8,
+                                direction: "variable",
+                                gusty: false
+                            }
+                        },
+                        altitude: 140,
+                        airQuality: "good",
+                        sunExposure: "moderate"
+                    },
+                    historicalData: {
+                        avgFinishTime: "12:55:30",
+                        medianFinishTime: "12:45:15",
+                        finishRate: 84,
+                        dnfRate: 16
+                    },
+                    logistics: {
+                        cutoffTimes: {
+                            swim: "02:20:00",
+                            bike: "10:30:00",
+                            total: "17:00:00"
+                        },
+                        challengeRating: "intermediate"
+                    }
+                },
+                {
+                    id: "im-mont-tremblant-2026",
+                    name: "IRONMAN Mont-Tremblant",
+                    location: {
+                        city: "Mont-Tremblant",
+                        state: "Quebec",
+                        country: "Canada",
+                        coordinates: {"lat": 46.1991, "lng": -74.5901}
+                    },
+                    date: "2026-08-23",
+                    registrationOpen: true,
+                    raceWebsite: "https://www.ironman.com/races/im-mont-tremblant",
+                    course: {
+                        swim: {
+                            distance: 3800,
+                            type: "lake",
+                            waves: "calm",
+                            current: "none",
+                            wetsuitLegal: true,
+                            avgWaterTemp: 21,
+                            loopCount: 2
+                        },
+                        bike: {
+                            distance: 180,
+                            elevationGain: 1950,
+                            elevationLoss: 1950,
+                            terrain: "mountainous",
+                            loops: 2,
+                            technicalDifficulty: "expert",
+                            roadSurface: "excellent"
+                        },
+                        run: {
+                            distance: 42.2,
+                            elevationGain: 350,
+                            terrain: "hilly",
+                            loops: 2,
+                            surface: "pavement"
+                        }
+                    },
+                    environment: {
+                        typicalWeather: {
+                            tempHigh: 25,
+                            tempLow: 15,
+                            humidity: 65,
+                            rainfall: "occasional",
+                            wind: {
+                                avgSpeed: 8,
+                                direction: "variable",
+                                gusty: false
+                            }
+                        },
+                        altitude: 230,
+                        airQuality: "excellent",
+                        sunExposure: "moderate"
+                    },
+                    historicalData: {
+                        avgFinishTime: "13:50:30",
+                        medianFinishTime: "13:35:15",
+                        finishRate: 77,
+                        dnfRate: 23
+                    },
+                    logistics: {
+                        cutoffTimes: {
+                            swim: "02:20:00",
+                            bike: "10:30:00",
+                            total: "17:00:00"
+                        },
+                        challengeRating: "expert"
+                    }
+                },
+                {
+                    id: "im-portugal-2026",
+                    name: "IRONMAN Portugal",
+                    location: {
+                        city: "Cascais",
+                        state: "Lisbon District",
+                        country: "Portugal",
+                        coordinates: {"lat": 38.6973, "lng": -9.4214}
+                    },
+                    date: "2026-10-18",
+                    registrationOpen: true,
+                    raceWebsite: "https://www.ironman.com/races/im-portugal",
+                    course: {
+                        swim: {
+                            distance: 3800,
+                            type: "ocean",
+                            waves: "moderate",
+                            current: "mild",
+                            wetsuitLegal: true,
+                            avgWaterTemp: 20,
+                            loopCount: 1
+                        },
+                        bike: {
+                            distance: 180,
+                            elevationGain: 1300,
+                            elevationLoss: 1300,
+                            terrain: "rolling",
+                            loops: 2,
+                            technicalDifficulty: "moderate",
+                            roadSurface: "excellent"
+                        },
+                        run: {
+                            distance: 42.2,
+                            elevationGain: 180,
+                            terrain: "rolling",
+                            loops: 3,
+                            surface: "pavement"
+                        }
+                    },
+                    environment: {
+                        typicalWeather: {
+                            tempHigh: 23,
+                            tempLow: 15,
+                            humidity: 70,
+                            rainfall: "occasional",
+                            wind: {
+                                avgSpeed: 15,
+                                direction: "coastal variable",
+                                gusty: true
+                            }
+                        },
+                        altitude: 40,
+                        airQuality: "excellent",
+                        sunExposure: "moderate"
+                    },
+                    historicalData: {
+                        avgFinishTime: "12:55:30",
+                        medianFinishTime: "12:45:15",
+                        finishRate: 83,
+                        dnfRate: 17
+                    },
+                    logistics: {
+                        cutoffTimes: {
+                            swim: "02:20:00",
+                            bike: "10:30:00",
+                            total: "17:00:00"
+                        },
+                        challengeRating: "intermediate"
+                    }
+                },
+                {
+                    id: "im-ireland-2026",
+                    name: "IRONMAN Ireland",
+                    location: {
+                        city: "Cork",
+                        state: "Munster",
+                        country: "Ireland",
+                        coordinates: {"lat": 51.8985, "lng": -8.4756}
+                    },
+                    date: "2026-11-07",
+                    registrationOpen: true,
+                    raceWebsite: "https://www.ironman.com/races/im-ireland",
+                    course: {
+                        swim: {
+                            distance: 3800,
+                            type: "ocean",
+                            waves: "moderate",
+                            current: "mild",
+                            wetsuitLegal: true,
+                            avgWaterTemp: 16,
+                            loopCount: 1
+                        },
+                        bike: {
+                            distance: 180,
+                            elevationGain: 1500,
+                            elevationLoss: 1500,
+                            terrain: "hilly",
+                            loops: 2,
+                            technicalDifficulty: "hard",
+                            roadSurface: "good"
+                        },
+                        run: {
+                            distance: 42.2,
+                            elevationGain: 250,
+                            terrain: "rolling",
+                            loops: 3,
+                            surface: "pavement"
+                        }
+                    },
+                    environment: {
+                        typicalWeather: {
+                            tempHigh: 18,
+                            tempLow: 10,
+                            humidity: 80,
+                            rainfall: "common",
+                            wind: {
+                                avgSpeed: 18,
+                                direction: "strong variable",
+                                gusty: true
+                            }
+                        },
+                        altitude: 30,
+                        airQuality: "excellent",
+                        sunExposure: "low"
+                    },
+                    historicalData: {
+                        avgFinishTime: "13:30:30",
+                        medianFinishTime: "13:20:15",
+                        finishRate: 79,
+                        dnfRate: 21
+                    },
+                    logistics: {
+                        cutoffTimes: {
+                            swim: "02:20:00",
+                            bike: "10:30:00",
+                            total: "17:00:00"
+                        },
+                        challengeRating: "advanced"
+                    }
+                },
+                {
+                    id: "im-belgium-2026",
+                    name: "IRONMAN Belgium",
+                    location: {
+                        city: "Antwerp",
+                        state: "Flanders",
+                        country: "Belgium",
+                        coordinates: {"lat": 51.2194, "lng": 4.4025}
+                    },
+                    date: "2026-12-13",
+                    registrationOpen: true,
+                    raceWebsite: "https://www.ironman.com/races/im-belgium",
+                    course: {
+                        swim: {
+                            distance: 3800,
+                            type: "river",
+                            waves: "calm",
+                            current: "mild",
+                            wetsuitLegal: true,
+                            avgWaterTemp: 12,
+                            loopCount: 1
+                        },
+                        bike: {
+                            distance: 180,
+                            elevationGain: 420,
+                            elevationLoss: 420,
+                            terrain: "flat",
+                            loops: 3,
+                            technicalDifficulty: "easy",
+                            roadSurface: "excellent"
+                        },
+                        run: {
+                            distance: 42.2,
+                            elevationGain: 60,
+                            terrain: "flat",
+                            loops: 4,
+                            surface: "pavement"
+                        }
+                    },
+                    environment: {
+                        typicalWeather: {
+                            tempHigh: 12,
+                            tempLow: 4,
+                            humidity: 85,
+                            rainfall: "common",
+                            wind: {
+                                avgSpeed: 15,
+                                direction: "variable",
+                                gusty: true
+                            }
+                        },
+                        altitude: 20,
+                        airQuality: "good",
+                        sunExposure: "low"
+                    },
+                    historicalData: {
+                        avgFinishTime: "12:35:30",
+                        medianFinishTime: "12:25:15",
+                        finishRate: 86,
+                        dnfRate: 14
+                    },
+                    logistics: {
+                        cutoffTimes: {
+                            swim: "02:20:00",
+                            bike: "10:30:00",
+                            total: "17:00:00"
+                        },
+                        challengeRating: "beginner"
+                    }
+                }
+            ],
+            lastUpdated: "2025-11-01",
+            totalRaces: 38,
+            dataVersion: "1.0"
+        };
+
+        // Global variables
+        let userProfile = {};
+        let racePredictions = [];
+        let filteredRaces = [];
+        let currentChart = null;
+
+        // Utility functions
+        function parseTime(timeStr) {
+            if (!timeStr) return 0;
+            const parts = timeStr.split(':');
+            if (parts.length === 3) {
+                return parseInt(parts[0]) * 3600 + parseInt(parts[1]) * 60 + parseInt(parts[2]);
+            } else if (parts.length === 2) {
+                return parseInt(parts[0]) * 60 + parseInt(parts[1]);
+            }
+            return parseInt(timeStr) || 0;
+        }
+
+        function formatTime(seconds) {
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function formatPace(secondsPerKm) {
+            const minutes = Math.floor(secondsPerKm / 60);
+            const seconds = Math.round(secondsPerKm % 60);
+            return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        // Cost calculation functions
+        function calculateFlightCost(originCountry, destinationCountry) {
+            const flightDistances = {
+                // From Thailand to race countries (approximate km)
+                'thailand': { 'usa': 17000, 'canada': 17500, 'australia': 7400, 'newzealand': 9500, 'france': 10500, 'spain': 11500, 'italy': 9800, 'germany': 9200, 'uk': 10800, 'sweden': 8800, 'switzerland': 9600, 'austria': 9100, 'portugal': 12000, 'ireland': 11200, 'japan': 4600, 'southkorea': 3200, 'china': 2800, 'taiwan': 1600, 'malaysia': 1200, 'southafrica': 9500, 'brazil': 18500, 'mexico': 18000, 'belgium': 10200, 'thailand': 0 },
+                'usa': { 'usa': 3000, 'canada': 2000, 'australia': 15000, 'newzealand': 13000, 'france': 7800, 'spain': 8500, 'italy': 8000, 'germany': 7200, 'uk': 6900, 'sweden': 7800, 'switzerland': 7600, 'austria': 7800, 'portugal': 8800, 'ireland': 6500, 'japan': 11000, 'southkorea': 11500, 'china': 11200, 'taiwan': 12500, 'malaysia': 17000, 'southafrica': 16000, 'brazil': 7500, 'mexico': 2000, 'belgium': 7400, 'thailand': 17000 },
+                'uk': { 'usa': 6900, 'canada': 5400, 'australia': 17000, 'newzealand': 18500, 'france': 600, 'spain': 1300, 'italy': 1700, 'germany': 900, 'uk': 500, 'sweden': 1400, 'switzerland': 1000, 'austria': 1300, 'portugal': 1600, 'ireland': 500, 'japan': 9600, 'southkorea': 8700, 'china': 8200, 'taiwan': 9800, 'malaysia': 10800, 'southafrica': 9700, 'brazil': 9200, 'mexico': 8800, 'belgium': 400, 'thailand': 10800 },
+                'germany': { 'usa': 7200, 'canada': 6200, 'australia': 14500, 'newzealand': 18000, 'france': 800, 'spain': 1500, 'italy': 1100, 'germany': 500, 'uk': 900, 'sweden': 800, 'switzerland': 400, 'austria': 600, 'portugal': 1900, 'ireland': 1400, 'japan': 8900, 'southkorea': 7800, 'china': 7200, 'taiwan': 8800, 'malaysia': 10200, 'southafrica': 9200, 'brazil': 9800, 'mexico': 9500, 'belgium': 600, 'thailand': 9200 },
+                'australia': { 'usa': 15000, 'canada': 16000, 'australia': 2000, 'newzealand': 2200, 'france': 17000, 'spain': 18000, 'italy': 16500, 'germany': 14500, 'uk': 17000, 'sweden': 15500, 'switzerland': 16200, 'austria': 15800, 'portugal': 18500, 'ireland': 17500, 'japan': 7800, 'southkorea': 8200, 'china': 9000, 'taiwan': 7200, 'malaysia': 6500, 'southafrica': 11000, 'brazil': 15000, 'mexico': 13500, 'belgium': 16800, 'thailand': 7400 },
+                'japan': { 'usa': 11000, 'canada': 10500, 'australia': 7800, 'newzealand': 9000, 'france': 9800, 'spain': 11000, 'italy': 9500, 'germany': 8900, 'uk': 9600, 'sweden': 8000, 'switzerland': 9200, 'austria': 8800, 'portugal': 11500, 'ireland': 10200, 'japan': 1000, 'southkorea': 1200, 'china': 2800, 'taiwan': 2100, 'malaysia': 5300, 'southafrica': 14000, 'brazil': 18500, 'mexico': 11500, 'belgium': 9400, 'thailand': 4600 }
+            };
+            
+            const distance = flightDistances[originCountry]?.[destinationCountry] || 10000;
+            // Flight cost calculation: $0.08-0.15 per km depending on distance
+            const costPerKm = distance > 10000 ? 0.08 : distance > 5000 ? 0.10 : 0.12;
+            return Math.round(distance * costPerKm);
+        }
+
+        function calculateAccommodationCost(country, nights = 5) {
+            const accommodationRates = {
+                'usa': 150, 'canada': 120, 'australia': 130, 'newzealand': 110, 'france': 140, 'spain': 100, 'italy': 120, 'germany': 110, 'uk': 140, 'sweden': 160, 'switzerland': 180, 'austria': 130, 'portugal': 90, 'ireland': 120, 'japan': 120, 'southkorea': 80, 'china': 70, 'taiwan': 80, 'malaysia': 50, 'southafrica': 70, 'brazil': 80, 'mexico': 70, 'belgium': 120, 'thailand': 40
+            };
+            return (accommodationRates[country] || 100) * nights;
+        }
+
+        function calculateDailyExpenses(country, days = 6) {
+            const dailyRates = {
+                'usa': 80, 'canada': 70, 'australia': 75, 'newzealand': 70, 'france': 85, 'spain': 60, 'italy': 70, 'germany': 65, 'uk': 75, 'sweden': 90, 'switzerland': 100, 'austria': 70, 'portugal': 55, 'ireland': 70, 'japan': 85, 'southkorea': 50, 'china': 40, 'taiwan': 45, 'malaysia': 30, 'southafrica': 45, 'brazil': 50, 'mexico': 45, 'belgium': 70, 'thailand': 25
+            };
+            return (dailyRates[country] || 60) * days;
+        }
+
+        function calculateTotalRaceCost(userCountry, race) {
+            const registrationFee = race.costs?.registrationUSD || 695;
+            const flightCost = calculateFlightCost(userCountry, getCountryCode(race.location.country));
+            const accommodationCost = calculateAccommodationCost(getCountryCode(race.location.country));
+            const dailyExpenses = calculateDailyExpenses(getCountryCode(race.location.country));
+            
+            const totalCost = registrationFee + flightCost + accommodationCost + dailyExpenses;
+            
+            return {
+                registration: registrationFee,
+                flight: flightCost,
+                accommodation: accommodationCost,
+                expenses: dailyExpenses,
+                total: totalCost,
+                category: getCostCategory(totalCost)
+            };
+        }
+
+        function getCountryCode(countryName) {
+            const countryMap = {
+                'United States': 'usa',
+                'Canada': 'canada',
+                'Australia': 'australia',
+                'New Zealand': 'newzealand',
+                'France': 'france',
+                'Spain': 'spain',
+                'Italy': 'italy',
+                'Germany': 'germany',
+                'United Kingdom': 'uk',
+                'Sweden': 'sweden',
+                'Switzerland': 'switzerland',
+                'Austria': 'austria',
+                'Portugal': 'portugal',
+                'Ireland': 'ireland',
+                'Japan': 'japan',
+                'South Korea': 'southkorea',
+                'China': 'china',
+                'Taiwan': 'taiwan',
+                'Malaysia': 'malaysia',
+                'South Africa': 'southafrica',
+                'Brazil': 'brazil',
+                'Mexico': 'mexico',
+                'Belgium': 'belgium',
+                'Thailand': 'thailand'
+            };
+            return countryMap[countryName] || 'usa';
+        }
+
+        function getCostCategory(totalCost) {
+            if (totalCost < 2000) return { symbol: '$', text: 'Budget', class: 'cost-budget' };
+            if (totalCost < 4000) return { symbol: '$$', text: 'Moderate', class: 'cost-moderate' };
+            if (totalCost < 6000) return { symbol: '$$$', text: 'Expensive', class: 'cost-expensive' };
+            return { symbol: '$$$$', text: 'Premium', class: 'cost-premium' };
+        }
+
+        // Prediction Algorithm
+        function calculateBaseTime(profile) {
+            // Swim time from pace per 100m
+            const swimPaceSeconds = parseTime(profile.swimPace);
+            const swimSeconds = swimPaceSeconds * 38; // 3800m = 38 * 100m
+
+            // Bike time from average speed (direct calculation)
+            const bikeSpeed = profile.bikeSpeed;
+            const bikeSeconds = (180 * 3600) / bikeSpeed; // 180km at given speed
+
+            // Run time from pace per km
+            const runPaceSeconds = parseTime(profile.runPace);
+            const runSeconds = runPaceSeconds * 42.2; // 42.2km at given pace
+
+            // Transition times based on experience
+            const t1Seconds = profile.experience === 'first' ? 8 * 60 : 5 * 60;
+            const t2Seconds = profile.experience === 'first' ? 6 * 60 : 4 * 60;
+
+            return {
+                swim: swimSeconds,
+                t1: t1Seconds,
+                bike: bikeSeconds,
+                t2: t2Seconds,
+                run: runSeconds,
+                total: swimSeconds + t1Seconds + bikeSeconds + t2Seconds + runSeconds
+            };
+        }
+
+        function adjustForElevation(courseProfile, userProfile, baseTime) {
+            let bikeAdjustment = 0;
+            let runAdjustment = 0;
+
+            // Bike elevation adjustment (1 minute per 100m of climbing)
+            bikeAdjustment = (courseProfile.bike.elevationGain / 100) * 60;
+
+            // Run elevation adjustment (2 minutes per 100m of climbing)
+            runAdjustment = (courseProfile.run.elevationGain / 100) * 120;
+
+            // Adjust based on user's climbing ability (estimated from speed/pace)
+            if (userProfile.bikeSpeed > 35) {
+                bikeAdjustment *= 0.8; // Faster cyclists handle climbing better
+            } else if (userProfile.bikeSpeed < 30) {
+                bikeAdjustment *= 1.2; // Slower cyclists struggle more with climbing
+            }
+
+            const runPaceSeconds = parseTime(userProfile.runPace);
+            if (runPaceSeconds < 300) { // Sub 5:00/km
+                runAdjustment *= 0.8;
+            } else if (runPaceSeconds > 360) { // Slower than 6:00/km
+                runAdjustment *= 1.2;
+            }
+
+            return { bike: bikeAdjustment, run: runAdjustment };
+        }
+
+        function adjustForTemperature(temperature, userProfile) {
+            const optimalTemp = 15; // Optimal racing temperature
+            let adjustment = 0;
+
+            if (temperature > 25) {
+                // Hot weather penalty
+                const tempDiff = temperature - 25;
+                adjustment = tempDiff * 30; // 30 seconds per degree above 25°C
+                
+                // Adjust for heat tolerance
+                if (userProfile.heatTolerance === 'high') {
+                    adjustment *= 0.5;
+                } else if (userProfile.heatTolerance === 'low') {
+                    adjustment *= 1.5;
+                }
+            } else if (temperature < 10) {
+                // Cold weather penalty (less severe)
+                const tempDiff = 10 - temperature;
+                adjustment = tempDiff * 15; // 15 seconds per degree below 10°C
+            }
+
+            return adjustment;
+        }
+
+        function adjustForOtherFactors(race, userProfile) {
+            let adjustment = 0;
+
+            // Altitude adjustment
+            if (race.environment.altitude > 1000) {
+                adjustment += (race.environment.altitude - 1000) / 1000 * 300; // 5 minutes per 1000m above 1000m
+            }
+
+            // Humidity adjustment
+            if (race.environment.typicalWeather.humidity > 70) {
+                adjustment += (race.environment.typicalWeather.humidity - 70) * 10; // 10 seconds per % above 70%
+            }
+
+            // Wind adjustment
+            if (race.environment.typicalWeather.wind.avgSpeed > 20) {
+                adjustment += (race.environment.typicalWeather.wind.avgSpeed - 20) * 30; // 30 seconds per km/h above 20
+            }
+
+            // Experience adjustment
+            switch (userProfile.experience) {
+                case 'first':
+                    adjustment += 600; // 10 minutes for first-timers
+                    break;
+                case '1-3':
+                    adjustment += 300; // 5 minutes
+                    break;
+                case '4-10':
+                    adjustment += 0; // Baseline
+                    break;
+                case '10+':
+                    adjustment -= 300; // 5 minutes advantage
+                    break;
+            }
+
+            return adjustment;
+        }
+
+        function calculateSuitabilityScore(race, userProfile, prediction) {
+            let swimScore = 60; // Base score
+            let bikeScore = 60;
+            let runScore = 60;
+            let environmentScore = 60;
+
+            // Swim scoring
+            if (race.course.swim.type === 'pool' || race.course.swim.waves === 'calm') {
+                swimScore += 20;
+            }
+            if (race.course.swim.wetsuitLegal) {
+                swimScore += 10;
+            }
+
+            // Bike scoring based on elevation and speed
+            const bikeElevation = race.course.bike.elevationGain;
+            if (userProfile.bikeSpeed > 35) {
+                // Fast cyclist - can handle hills better
+                if (bikeElevation < 800) bikeScore += 20;
+                else if (bikeElevation < 1500) bikeScore += 10;
+                else bikeScore -= 10;
+            } else if (userProfile.bikeSpeed < 30) {
+                // Slower cyclist - prefers flat courses
+                if (bikeElevation < 600) bikeScore += 25;
+                else if (bikeElevation > 1200) bikeScore -= 20;
+            }
+
+            // Run scoring based on pace and course
+            const runPaceSeconds = parseTime(userProfile.runPace);
+            const runElevation = race.course.run.elevationGain;
+            
+            if (runPaceSeconds < 300) {
+                // Fast runner
+                if (runElevation < 150) runScore += 15;
+                else if (runElevation > 300) runScore -= 10;
+            } else if (runPaceSeconds > 360) {
+                // Slower runner - prefers flat courses
+                if (runElevation < 100) runScore += 20;
+                else if (runElevation > 200) runScore -= 15;
+            }
+
+            // Environment scoring
+            const temp = race.environment.typicalWeather.tempHigh;
+            if (userProfile.heatTolerance === 'high') {
+                if (temp > 25) environmentScore += 15;
+                else if (temp < 15) environmentScore -= 10;
+            } else if (userProfile.heatTolerance === 'low') {
+                if (temp < 20) environmentScore += 15;
+                else if (temp > 28) environmentScore -= 20;
+            } else {
+                // Moderate heat tolerance
+                if (temp >= 15 && temp <= 25) environmentScore += 10;
+                else if (temp > 30) environmentScore -= 15;
+            }
+
+            // Performance score based on predicted time vs race average
+            let performanceScore = 60; // Base score
+            if (race.historicalData?.avgFinishTime) {
+                const raceAvgSeconds = parseTime(race.historicalData.avgFinishTime);
+                const predictedSeconds = prediction.totalTime;
+                const timeDifferencePercent = ((raceAvgSeconds - predictedSeconds) / raceAvgSeconds) * 100;
+                
+                // Better than average gets bonus points
+                if (timeDifferencePercent > 10) performanceScore += 30; // 10%+ faster than average
+                else if (timeDifferencePercent > 5) performanceScore += 20; // 5-10% faster
+                else if (timeDifferencePercent > 0) performanceScore += 10; // Faster than average
+                else if (timeDifferencePercent > -5) performanceScore += 5; // Close to average
+                else if (timeDifferencePercent > -10) performanceScore -= 5; // Slightly slower
+                else performanceScore -= 15; // Much slower than average
+            }
+
+            // Weight the scores (new weighting with performance component)
+            const overallScore = Math.round(
+                performanceScore * 0.25 +  // NEW: Performance score
+                bikeScore * 0.35 +         // Reduced from 0.45
+                runScore * 0.25 +          // Reduced from 0.30
+                swimScore * 0.10 +         // Reduced from 0.15
+                environmentScore * 0.05    // Reduced from 0.10
+            );
+
+            // Ensure score is between 0 and 100
+            const finalScore = Math.max(0, Math.min(100, overallScore));
+
+            function scoreToGrade(score) {
+                if (score >= 90) return 'A';
+                if (score >= 80) return 'B';
+                if (score >= 70) return 'C';
+                if (score >= 60) return 'D';
+                return 'F';
+            }
+
+            return {
+                overallScore: finalScore,
+                grade: scoreToGrade(finalScore),
+                componentScores: {
+                    swim: Math.max(0, Math.min(100, swimScore)),
+                    bike: Math.max(0, Math.min(100, bikeScore)),
+                    run: Math.max(0, Math.min(100, runScore)),
+                    environment: Math.max(0, Math.min(100, environmentScore))
+                }
+            };
+        }
+
+        function predictRaceTime(race, userProfile) {
+            const baseTime = calculateBaseTime(userProfile);
+            const elevationAdj = adjustForElevation(race.course, userProfile, baseTime);
+            const tempAdj = adjustForTemperature(race.environment.typicalWeather.tempHigh, userProfile);
+            const otherAdj = adjustForOtherFactors(race, userProfile);
+
+            const totalAdjustment = elevationAdj.bike + elevationAdj.run + tempAdj + otherAdj;
+
+            const prediction = {
+                swimTime: baseTime.swim,
+                t1Time: baseTime.t1,
+                bikeTime: baseTime.bike + elevationAdj.bike,
+                t2Time: baseTime.t2,
+                runTime: baseTime.run + elevationAdj.run + tempAdj + (otherAdj * 0.3), // Most other adjustments affect run
+                totalTime: baseTime.total + totalAdjustment,
+                confidence: {
+                    best: baseTime.total + totalAdjustment - 1200, // 20 minutes faster
+                    likely: baseTime.total + totalAdjustment,
+                    worst: baseTime.total + totalAdjustment + 1800 // 30 minutes slower
+                }
+            };
+
+            const suitability = calculateSuitabilityScore(race, userProfile, prediction);
+
+            return {
+                raceId: race.id,
+                race: race,
+                prediction: prediction,
+                suitability: suitability
+            };
+        }
+
+        // Main calculation function
+        function calculatePredictions() {
+            // Show loading
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('results').style.display = 'none';
+
+            // Get user input
+            userProfile = {
+                swimPace: document.getElementById('swimPace').value,
+                bikeSpeed: parseFloat(document.getElementById('bikeSpeed').value),
+                runPace: document.getElementById('runPace').value,
+                age: parseInt(document.getElementById('age').value),
+                gender: document.getElementById('gender').value,
+                weight: parseFloat(document.getElementById('weight').value),
+                experience: document.getElementById('experience').value,
+                heatTolerance: document.getElementById('heatTolerance').value,
+                countryOfOrigin: document.getElementById('countryOfOrigin').value,
+                trainingVolume: parseInt(document.getElementById('trainingVolume').value) || 15
+            };
+
+            // Validate inputs
+            if (!userProfile.swimPace || !userProfile.bikeSpeed || !userProfile.runPace || 
+                !userProfile.age || !userProfile.gender || !userProfile.weight || !userProfile.experience) {
+                alert('Please fill in all required fields');
+                document.getElementById('loading').style.display = 'none';
+                return;
+            }
+
+            // Calculate predictions for all races
+            setTimeout(() => {
+                racePredictions = raceData.races.map(race => predictRaceTime(race, userProfile));
+                racePredictions.sort((a, b) => b.suitability.overallScore - a.suitability.overallScore);
+                filteredRaces = [...racePredictions];
+
+                // Display results
+                displayPredictionSummary();
+                displayRaceTable();
+                displayChart();
+
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('results').style.display = 'block';
+                
+                // Scroll to results
+                document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+            }, 1000);
+        }
+
+        function displayPredictionSummary() {
+            const bestRace = racePredictions[0];
+            const avgTime = racePredictions.reduce((sum, rp) => sum + rp.prediction.totalTime, 0) / racePredictions.length;
+            const aGradeRaces = racePredictions.filter(rp => rp.suitability.grade === 'A').length;
+
+            const summaryHtml = `
+                <div class="prediction-summary">
+                    <h3>🎯 Your Best Race Match</h3>
+                    <div class="time">${formatTime(bestRace.prediction.totalTime)}</div>
+                    <p><strong>${bestRace.race.name}</strong> - ${bestRace.race.location.city}, ${bestRace.race.location.country}</p>
+                    <p>Date: ${new Date(bestRace.race.date).toLocaleDateString('en-US', { 
+                        year: 'numeric', month: 'long', day: 'numeric' 
+                    })}</p>
+                    <p>Suitability: <span class="grade-badge grade-${bestRace.suitability.grade.toLowerCase()}">${bestRace.suitability.grade} (${bestRace.suitability.overallScore}/100)</span></p>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin: 2rem 0;">
+                    <div style="text-align: center; padding: 1rem; background: #f0f9ff; border-radius: 8px;">
+                        <div style="font-size: 1.5rem; font-weight: bold; color: var(--primary-color);">${formatTime(avgTime)}</div>
+                        <div style="color: var(--text-secondary);">Average Predicted Time</div>
+                    </div>
+                    <div style="text-align: center; padding: 1rem; background: #f0f9ff; border-radius: 8px;">
+                        <div style="font-size: 1.5rem; font-weight: bold; color: var(--primary-color);">${aGradeRaces}</div>
+                        <div style="color: var(--text-secondary);">A-Grade Matches</div>
+                    </div>
+                    <div style="text-align: center; padding: 1rem; background: #f0f9ff; border-radius: 8px;">
+                        <div style="font-size: 1.5rem; font-weight: bold; color: var(--primary-color);">${racePredictions.length}</div>
+                        <div style="color: var(--text-secondary);">Total Races Analyzed</div>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('predictionSummary').innerHTML = summaryHtml;
+        }
+
+        function displayRaceTable() {
+            const tbody = document.getElementById('raceTableBody');
+            tbody.innerHTML = '';
+
+            filteredRaces.forEach(rp => {
+                const row = document.createElement('tr');
+                
+                // Calculate cost for display
+                const costData = calculateTotalRaceCost(userProfile.countryOfOrigin || 'thailand', rp.race);
+                
+                // Course difficulty indicators
+                const bikeIcon = rp.race.course.bike.elevationGain > 1500 ? '⛰️' : 
+                                rp.race.course.bike.elevationGain > 800 ? '🏔️' : '🏟️';
+                const tempIcon = rp.race.environment.typicalWeather.tempHigh > 28 ? '🔥' : 
+                                rp.race.environment.typicalWeather.tempHigh < 15 ? '❄️' : '🌤️';
+                
+                // Value score calculation (combines suitability and cost efficiency)
+                const valueScore = Math.round((rp.suitability.overallScore / 100) * (1 - (costData.total - 1500) / 8000) * 100);
+                const valueClass = valueScore > 80 ? 'value-excellent' : valueScore > 60 ? 'value-good' : 'value-fair';
+                
+                row.innerHTML = `
+                    <td><strong>${rp.race.name}</strong></td>
+                    <td>${new Date(rp.race.date).toLocaleDateString('en-US', { 
+                        month: 'short', day: 'numeric', year: 'numeric' 
+                    })}</td>
+                    <td>${rp.race.location.city}, ${rp.race.location.country}</td>
+                    <td><strong>${formatTime(rp.prediction.totalTime)}</strong></td>
+                    <td>
+                        <span class="grade-badge grade-${rp.suitability.grade.toLowerCase()}">${rp.suitability.grade} (${rp.suitability.overallScore})</span>
+                        <br><span class="value-score ${valueClass}">💰 ${valueScore}% Value</span>
+                    </td>
+                    <td>
+                        <div class="${costData.category.class}">
+                            <strong>${costData.category.symbol}</strong> $${costData.total.toLocaleString()}
+                        </div>
+                        <div style="font-size: 0.8rem; color: var(--text-secondary);">${costData.category.text}</div>
+                    </td>
+                    <td>
+                        <div class="course-icons">
+                            <span title="Bike elevation: ${rp.race.course.bike.elevationGain}m">${bikeIcon}</span>
+                            <span title="Run elevation: ${rp.race.course.run.elevationGain}m">${rp.race.course.run.elevationGain > 200 ? '🏃‍♂️⛰️' : '🏃‍♂️'}</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="course-icons">
+                            <span title="Temperature: ${rp.race.environment.typicalWeather.tempHigh}°C">${tempIcon}</span>
+                            <span title="Altitude: ${rp.race.environment.altitude}m">${rp.race.environment.altitude > 1000 ? '🏔️' : '🏟️'}</span>
+                        </div>
+                    </td>
+                    <td>
+                        <button class="btn" style="padding: 0.5rem 1rem; font-size: 0.8rem;" onclick="showRaceDetails('${rp.race.id}')">
+                            Details
+                        </button>
+                    </td>
+                `;
+                
+                // Store cost data for sorting
+                rp.costData = costData;
+                
+                tbody.appendChild(row);
+            });
+        }
+
+        function displayChart() {
+            const ctx = document.getElementById('performanceChart').getContext('2d');
+            
+            if (currentChart) {
+                currentChart.destroy();
+            }
+
+            // Ensure chart container is visible before rendering
+            const chartContainer = document.querySelector('.chart-container');
+            if (chartContainer && chartContainer.offsetHeight === 0) {
+                setTimeout(displayChart, 100);
+                return;
+            }
+
+            const chartData = filteredRaces.slice(0, 10).map(rp => ({
+                x: rp.race.name.substring(0, 15) + '...',
+                y: rp.prediction.totalTime / 3600, // Convert to hours
+                suitability: rp.suitability.overallScore,
+                grade: rp.suitability.grade
+            }));
+
+            currentChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: chartData.map(d => d.x),
+                    datasets: [{
+                        label: 'Predicted Finish Time (hours)',
+                        data: chartData.map(d => d.y),
+                        backgroundColor: chartData.map(d => {
+                            switch(d.grade) {
+                                case 'A': return 'rgba(34, 197, 94, 0.8)';
+                                case 'B': return 'rgba(132, 204, 22, 0.8)';
+                                case 'C': return 'rgba(252, 211, 77, 0.8)';
+                                case 'D': return 'rgba(251, 146, 60, 0.8)';
+                                case 'F': return 'rgba(239, 68, 68, 0.8)';
+                                default: return 'rgba(156, 163, 175, 0.8)';
+                            }
+                        }),
+                        borderColor: chartData.map(d => {
+                            switch(d.grade) {
+                                case 'A': return 'rgba(34, 197, 94, 1)';
+                                case 'B': return 'rgba(132, 204, 22, 1)';
+                                case 'C': return 'rgba(252, 211, 77, 1)';
+                                case 'D': return 'rgba(251, 146, 60, 1)';
+                                case 'F': return 'rgba(239, 68, 68, 1)';
+                                default: return 'rgba(156, 163, 175, 1)';
+                            }
+                        }),
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: {
+                        duration: 0 // Disable animations for better performance
+                    },
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Predicted Finish Times - Top 10 Races by Suitability'
+                        },
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const hours = Math.floor(context.parsed.y);
+                                    const minutes = Math.round((context.parsed.y - hours) * 60);
+                                    return `Time: ${hours}:${minutes.toString().padStart(2, '0')}:00`;
+                                },
+                                afterLabel: function(context) {
+                                    const data = chartData[context.dataIndex];
+                                    return `Suitability: ${data.grade} (${data.suitability}/100)`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            title: {
+                                display: true,
+                                text: 'Finish Time (hours)'
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    const hours = Math.floor(value);
+                                    const minutes = Math.round((value - hours) * 60);
+                                    return `${hours}:${minutes.toString().padStart(2, '0')}`;
+                                }
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Race'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Filter and sort functions
+        function filterRaces() {
+            let filtered = [...racePredictions];
+
+            // Location filter
+            const locationFilter = document.getElementById('locationFilter').value;
+            if (locationFilter !== 'all') {
+                filtered = filtered.filter(rp => {
+                    switch(locationFilter) {
+                        case 'usa':
+                            return rp.race.location.country === 'United States';
+                        case 'europe':
+                            return ['Germany', 'France', 'United Kingdom', 'Spain', 'Italy', 'Switzerland'].includes(rp.race.location.country);
+                        case 'asia':
+                            return ['Malaysia', 'Australia', 'New Zealand', 'Japan', 'China'].includes(rp.race.location.country);
+                        case 'americas':
+                            return ['United States', 'Canada', 'Mexico', 'Brazil'].includes(rp.race.location.country);
+                        default:
+                            return true;
+                    }
+                });
+            }
+
+            // Date filter
+            const dateFilter = document.getElementById('dateFilter').value;
+            if (dateFilter !== 'all') {
+                filtered = filtered.filter(rp => {
+                    const raceDate = new Date(rp.race.date);
+                    const year = raceDate.getFullYear();
+                    const month = raceDate.getMonth() + 1;
+                    
+                    switch(dateFilter) {
+                        case '2025-q4':
+                            return year === 2025 && month >= 10;
+                        case '2026-q1':
+                            return year === 2026 && month >= 1 && month <= 3;
+                        case '2026-q2':
+                            return year === 2026 && month >= 4 && month <= 6;
+                        case '2026-q3':
+                            return year === 2026 && month >= 7 && month <= 9;
+                        case '2026-q4':
+                            return year === 2026 && month >= 10;
+                        default:
+                            return true;
+                    }
+                });
+            }
+
+            // Grade filter
+            const gradeFilter = document.getElementById('gradeFilter').value;
+            if (gradeFilter !== 'all') {
+                filtered = filtered.filter(rp => {
+                    switch(gradeFilter) {
+                        case 'a':
+                            return rp.suitability.grade === 'A';
+                        case 'ab':
+                            return ['A', 'B'].includes(rp.suitability.grade);
+                        case 'abc':
+                            return ['A', 'B', 'C'].includes(rp.suitability.grade);
+                        default:
+                            return true;
+                    }
+                });
+            }
+
+            // Course filter
+            const courseFilter = document.getElementById('courseFilter').value;
+            if (courseFilter !== 'all') {
+                filtered = filtered.filter(rp => {
+                    const elevation = rp.race.course.bike.elevationGain;
+                    switch(courseFilter) {
+                        case 'flat':
+                            return elevation < 1000;
+                        case 'rolling':
+                            return elevation >= 1000 && elevation <= 1800;
+                        case 'hilly':
+                            return elevation > 1800;
+                        default:
+                            return true;
+                    }
+                });
+            }
+
+            filteredRaces = filtered;
+            displayRaceTable();
+        }
+
+        function sortRaces() {
+            const sortBy = document.getElementById('sortBy').value;
+            
+            filteredRaces.sort((a, b) => {
+                switch(sortBy) {
+                    case 'suitability':
+                        return b.suitability.overallScore - a.suitability.overallScore;
+                    case 'predictedTime':
+                        return a.prediction.totalTime - b.prediction.totalTime;
+                    case 'date':
+                        return new Date(a.race.date) - new Date(b.race.date);
+                    case 'name':
+                        return a.race.name.localeCompare(b.race.name);
+                    case 'difficulty':
+                        return a.race.course.bike.elevationGain - b.race.course.bike.elevationGain;
+                    default:
+                        return 0;
+                }
+            });
+            
+            displayRaceTable();
+        }
+
+        // Modal functions
+        function showRaceDetails(raceId) {
+            const racePredict = racePredictions.find(rp => rp.race.id === raceId);
+            if (!racePredict) return;
+
+            const race = racePredict.race;
+            const prediction = racePredict.prediction;
+            const suitability = racePredict.suitability;
+
+            const detailsHtml = `
+                <h2>${race.name}</h2>
+                <div style="margin-bottom: 2rem;">
+                    <span class="grade-badge grade-${suitability.grade.toLowerCase()}">
+                        Grade ${suitability.grade} - ${suitability.overallScore}/100
+                    </span>
+                </div>
+
+                <div class="prediction-summary">
+                    <h3>Your Predicted Performance</h3>
+                    <div class="time">${formatTime(prediction.totalTime)}</div>
+                    <p>Confidence Range: ${formatTime(prediction.confidence.best)} - ${formatTime(prediction.confidence.worst)}</p>
+                </div>
+
+                <table class="splits-table">
+                    <thead>
+                        <tr><th>Segment</th><th>Predicted Time</th><th>Pace/Speed</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Swim</td>
+                            <td>${formatTime(prediction.swimTime)}</td>
+                            <td>${formatPace(prediction.swimTime / 38)}/100m</td>
+                        </tr>
+                        <tr>
+                            <td>T1</td>
+                            <td>${formatTime(prediction.t1Time)}</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td>Bike</td>
+                            <td>${formatTime(prediction.bikeTime)}</td>
+                            <td>${(180 / (prediction.bikeTime / 3600)).toFixed(1)} km/h</td>
+                        </tr>
+                        <tr>
+                            <td>T2</td>
+                            <td>${formatTime(prediction.t2Time)}</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td>Run</td>
+                            <td>${formatTime(prediction.runTime)}</td>
+                            <td>${formatPace(prediction.runTime / 42.2)}/km</td>
+                        </tr>
+                        <tr style="font-weight: bold; background: #f0f9ff;">
+                            <td>Total</td>
+                            <td>${formatTime(prediction.totalTime)}</td>
+                            <td>-</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div style="margin: 2rem 0;">
+                    <h3>Course Profile</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
+                        <div>
+                            <h4>Swim</h4>
+                            <p>${race.course.swim.distance}m ${race.course.swim.type}</p>
+                            <p>Water temp: ${race.course.swim.avgWaterTemp}°C</p>
+                            <p>Wetsuit: ${race.course.swim.wetsuitLegal ? 'Legal' : 'Not Legal'}</p>
+                        </div>
+                        <div>
+                            <h4>Bike</h4>
+                            <p>${race.course.bike.distance}km</p>
+                            <p>Elevation: ${race.course.bike.elevationGain}m gain</p>
+                            <p>Terrain: ${race.course.bike.terrain}</p>
+                        </div>
+                        <div>
+                            <h4>Run</h4>
+                            <p>${race.course.run.distance}km</p>
+                            <p>Elevation: ${race.course.run.elevationGain}m gain</p>
+                            <p>Terrain: ${race.course.run.terrain}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin: 2rem 0;">
+                    <h3>Environmental Conditions</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                        <div>
+                            <h4>Weather</h4>
+                            <p>Temperature: ${race.environment.typicalWeather.tempLow}-${race.environment.typicalWeather.tempHigh}°C</p>
+                            <p>Humidity: ${race.environment.typicalWeather.humidity}%</p>
+                            <p>Wind: ${race.environment.typicalWeather.wind.avgSpeed} km/h</p>
+                        </div>
+                        <div>
+                            <h4>Location</h4>
+                            <p>Altitude: ${race.environment.altitude}m</p>
+                            <p>Air quality: ${race.environment.airQuality}</p>
+                            <p>Sun exposure: ${race.environment.sunExposure}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin: 2rem 0;">
+                    <h3>Suitability Breakdown</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
+                        <div>Swim: ${suitability.componentScores.swim}/100</div>
+                        <div>Bike: ${suitability.componentScores.bike}/100</div>
+                        <div>Run: ${suitability.componentScores.run}/100</div>
+                        <div>Environment: ${suitability.componentScores.environment}/100</div>
+                    </div>
+                </div>
+
+                <div style="margin: 2rem 0;">
+                    <h3>Race Information</h3>
+                    <p><strong>Date:</strong> ${new Date(race.date).toLocaleDateString('en-US', { 
+                        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
+                    })}</p>
+                    <p><strong>Location:</strong> ${race.location.city}, ${race.location.state}, ${race.location.country}</p>
+                    <p><strong>Registration:</strong> ${race.registrationOpen ? 'Open' : 'Closed'}</p>
+                    <p><strong>Challenge Level:</strong> ${race.logistics.challengeRating}</p>
+                    <p><strong>Cutoff Times:</strong> Swim ${race.logistics.cutoffTimes.swim}, Bike ${race.logistics.cutoffTimes.bike}, Total ${race.logistics.cutoffTimes.total}</p>
+                </div>
+
+                <div style="text-align: center; margin: 2rem 0;">
+                    <a href="${race.raceWebsite}" target="_blank" class="btn">Visit Official Race Page</a>
+                </div>
+            `;
+
+            document.getElementById('raceDetails').innerHTML = detailsHtml;
+            document.getElementById('raceModal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('raceModal').style.display = 'none';
+        }
+
+        // Chart type switching
+        function showTimelineChart() {
+            const ctx = document.getElementById('performanceChart').getContext('2d');
+            
+            if (currentChart) {
+                currentChart.destroy();
+            }
+
+            // Ensure chart container is visible before rendering
+            const chartContainer = document.querySelector('.chart-container');
+            if (chartContainer && chartContainer.offsetHeight === 0) {
+                setTimeout(showTimelineChart, 100);
+                return;
+            }
+
+            const chartData = filteredRaces.map(rp => ({
+                x: rp.race.date,
+                y: rp.prediction.totalTime / 3600,
+                name: rp.race.name,
+                grade: rp.suitability.grade
+            }));
+
+            currentChart = new Chart(ctx, {
+                type: 'scatter',
+                data: {
+                    datasets: [{
+                        label: 'Race Timeline',
+                        data: chartData,
+                        backgroundColor: chartData.map(d => {
+                            switch(d.grade) {
+                                case 'A': return 'rgba(34, 197, 94, 0.8)';
+                                case 'B': return 'rgba(132, 204, 22, 0.8)';
+                                case 'C': return 'rgba(252, 211, 77, 0.8)';
+                                case 'D': return 'rgba(251, 146, 60, 0.8)';
+                                case 'F': return 'rgba(239, 68, 68, 0.8)';
+                                default: return 'rgba(156, 163, 175, 0.8)';
+                            }
+                        }),
+                        pointRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: {
+                        duration: 0
+                    },
+                    interaction: {
+                        intersect: false,
+                        mode: 'point'
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Race Timeline - Predicted Times by Date'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                title: function(context) {
+                                    return chartData[context[0].dataIndex].name;
+                                },
+                                label: function(context) {
+                                    const hours = Math.floor(context.parsed.y);
+                                    const minutes = Math.round((context.parsed.y - hours) * 60);
+                                    return `Time: ${hours}:${minutes.toString().padStart(2, '0')}:00`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            type: 'time',
+                            time: {
+                                unit: 'month'
+                            },
+                            title: {
+                                display: true,
+                                text: 'Race Date'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Predicted Finish Time (hours)'
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    const hours = Math.floor(value);
+                                    const minutes = Math.round((value - hours) * 60);
+                                    return `${hours}:${minutes.toString().padStart(2, '0')}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function showScatterChart() {
+            const ctx = document.getElementById('performanceChart').getContext('2d');
+            
+            if (currentChart) {
+                currentChart.destroy();
+            }
+
+            // Ensure chart container is visible before rendering
+            const chartContainer = document.querySelector('.chart-container');
+            if (chartContainer && chartContainer.offsetHeight === 0) {
+                setTimeout(showScatterChart, 100);
+                return;
+            }
+
+            const chartData = filteredRaces.map(rp => ({
+                x: rp.race.course.bike.elevationGain + rp.race.course.run.elevationGain,
+                y: rp.prediction.totalTime / 3600,
+                name: rp.race.name,
+                grade: rp.suitability.grade
+            }));
+
+            currentChart = new Chart(ctx, {
+                type: 'scatter',
+                data: {
+                    datasets: [{
+                        label: 'Difficulty vs Performance',
+                        data: chartData,
+                        backgroundColor: chartData.map(d => {
+                            switch(d.grade) {
+                                case 'A': return 'rgba(34, 197, 94, 0.8)';
+                                case 'B': return 'rgba(132, 204, 22, 0.8)';
+                                case 'C': return 'rgba(252, 211, 77, 0.8)';
+                                case 'D': return 'rgba(251, 146, 60, 0.8)';
+                                case 'F': return 'rgba(239, 68, 68, 0.8)';
+                                default: return 'rgba(156, 163, 175, 0.8)';
+                            }
+                        }),
+                        pointRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: {
+                        duration: 0
+                    },
+                    interaction: {
+                        intersect: false,
+                        mode: 'point'
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Course Difficulty vs Predicted Performance'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                title: function(context) {
+                                    return chartData[context[0].dataIndex].name;
+                                },
+                                label: function(context) {
+                                    const hours = Math.floor(context.parsed.y);
+                                    const minutes = Math.round((context.parsed.y - hours) * 60);
+                                    return [`Elevation: ${context.parsed.x}m`, `Time: ${hours}:${minutes.toString().padStart(2, '0')}:00`];
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Total Elevation Gain (m)'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Predicted Finish Time (hours)'
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    const hours = Math.floor(value);
+                                    const minutes = Math.round((value - hours) * 60);
+                                    return `${hours}:${minutes.toString().padStart(2, '0')}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function showRadarChart() {
+            // Show comparison of top 5 races
+            const ctx = document.getElementById('performanceChart').getContext('2d');
+            
+            if (currentChart) {
+                currentChart.destroy();
+            }
+
+            // Ensure chart container is visible before rendering
+            const chartContainer = document.querySelector('.chart-container');
+            if (chartContainer && chartContainer.offsetHeight === 0) {
+                setTimeout(showRadarChart, 100);
+                return;
+            }
+
+            const topRaces = filteredRaces.slice(0, 5);
+            const datasets = topRaces.map((rp, index) => ({
+                label: rp.race.name.substring(0, 20),
+                data: [
+                    rp.suitability.componentScores.swim,
+                    rp.suitability.componentScores.bike,
+                    rp.suitability.componentScores.run,
+                    rp.suitability.componentScores.environment,
+                    100 - (rp.race.course.bike.elevationGain / 25), // Inverse difficulty
+                    100 - (rp.race.environment.typicalWeather.tempHigh - 15) * 3 // Temperature comfort
+                ],
+                borderColor: `hsl(${index * 72}, 70%, 50%)`,
+                backgroundColor: `hsla(${index * 72}, 70%, 50%, 0.2)`,
+                borderWidth: 2
+            }));
+
+            currentChart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['Swim Match', 'Bike Match', 'Run Match', 'Environment', 'Ease', 'Temperature'],
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: {
+                        duration: 0
+                    },
+                    interaction: {
+                        intersect: false
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Race Profile Comparison - Top 5 Matches'
+                        }
+                    },
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    }
+                }
+            });
+        }
+
+        // Event listeners
+        window.onclick = function(event) {
+            const modal = document.getElementById('raceModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+
+        // Chart refresh and visibility handling
+        function refreshCurrentChart() {
+            if (currentChart && racePredictions.length > 0) {
+                const resultsSection = document.getElementById('results');
+                const chartCanvas = document.getElementById('performanceChart');
+                
+                // Check if results section and chart are visible
+                if (resultsSection.style.display !== 'none' && chartCanvas.offsetHeight > 0) {
+                    // Small delay to ensure proper rendering
+                    setTimeout(() => {
+                        currentChart.resize();
+                        currentChart.update('none'); // Update without animation
+                    }, 100);
+                }
+            }
+        }
+
+        // Handle window resize events
+        window.addEventListener('resize', function() {
+            refreshCurrentChart();
+        });
+
+        // Observe visibility changes of the results section
+        function observeResultsVisibility() {
+            const resultsSection = document.getElementById('results');
+            if (resultsSection) {
+                const observer = new MutationObserver(function(mutations) {
+                    mutations.forEach(function(mutation) {
+                        if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+                            const target = mutation.target;
+                            if (target.style.display !== 'none' && target.style.display !== '') {
+                                // Results section became visible, refresh chart
+                                setTimeout(refreshCurrentChart, 200);
+                            }
+                        }
+                    });
+                });
+                
+                observer.observe(resultsSection, {
+                    attributes: true,
+                    attributeFilter: ['style']
+                });
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize visibility observer
+            observeResultsVisibility();
+            
+            // Auto-fill some demo data for testing
+            if (window.location.hash === '#demo') {
+                document.getElementById('swimTime').value = '1:20:00';
+                document.getElementById('bikePower').value = '225';
+                document.getElementById('runPace').value = '5:45';
+                document.getElementById('age').value = '35';
+                document.getElementById('gender').value = 'male';
+                document.getElementById('weight').value = '75';
+                document.getElementById('experience').value = '1-3';
+                document.getElementById('heatTolerance').value = 'moderate';
+                document.getElementById('trainingVolume').value = '15';
+            }
+        });
+    </script>
+</body>
+</html>
